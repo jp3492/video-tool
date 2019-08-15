@@ -1,0 +1,14 @@
+.button {
+  display: grid;
+  place-items: center;
+  grid-auto-flow: column;
+  grid-column-gap: 10px;
+  width: max-content;
+  padding: 5px 10px;
+  cursor: pointer;
+  background-color: var(--color-grey-2);
+  border-radius: 4px;
+  * { 
+    cursor: pointer;
+  }
+}

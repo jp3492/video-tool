@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "downlevelIteration": true,
+    "noImplicitAny": false,
     "target": "es5",
     "lib": [
       "dom",
@@ -20,6 +22,7 @@
     "jsx": "preserve"
   },
   "include": [
-    "src"
+    "src",
+    "src/node_modules/auth"
   ]
 }

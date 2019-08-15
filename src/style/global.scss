@@ -1,0 +1,20 @@
+@import './buttons.scss';
+
+body {
+  margin: 0;
+}
+
+i, a {
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+ul, p, menu, a {
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+  list-style-type: none;
+}

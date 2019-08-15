@@ -1,0 +1,39 @@
+.folders {
+  display: grid;
+  grid-row-gap: 10px;
+
+  width: 200px;
+
+  .folders_folder {
+    display: grid;
+    grid-template-columns: max-content 1fr max-content;
+    grid-gap: 10px;
+    align-items: center;
+
+    > i {
+      width: 25px;
+    }
+
+    &[data-folder-selected="true"] {
+      > label {
+        background-color: var(--color-grey-1);
+      }
+    }
+
+    &[data-folder-open="true"] {
+      > i {
+        transform: rotate(180deg);
+      }
+    }
+
+    > label {
+      place-self: stretch;
+      display: grid;
+      align-content: center;
+    }
+
+    > .folders {
+      grid-column: 1 / 4;
+    }
+  }
+}

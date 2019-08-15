@@ -1,26 +1,46 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import { Router } from '@reach/router'
+
+import Modal from './components/modal/modal'
+import { Header } from './components/header/header'
+import { Management } from './pages'
+
+const navItems = [
+  {
+    label: "Manage",
+    to: "/",
+    icon: "apps"
+  },
+  {
+    label: "Profile",
+    to: "/profile",
+    icon: "person"
+  }
+]
+
+const components = [
+  {
+    label: "Stars",
+    icon: "grade",
+    contentComponent: () => <div>All my stars!!</div>
+  }
+]
 
 const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <Modal />
+      <Header
+        logo="https://placeholder.com/wp-content/uploads/2018/10/placeholder.com-logo1.png"
+        navItems={navItems}
+        components={components} />
+      <div className="app__content">
+        <Router>
+          <Management path="/" />
+        </Router>
+      </div>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

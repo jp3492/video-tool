@@ -1,0 +1,136 @@
+header {
+  z-index: 2;
+
+  position: sticky;
+  top: 0;
+  height: 60px;
+
+  display: grid;
+  grid-template-columns: 1fr max-content;
+  grid-column-gap: 20px;
+  align-items: center;
+
+  box-shadow: var(--shadow);
+
+  padding: 0 10px;
+
+  > i {
+    display: none !important;
+  }
+
+  > div {
+    display: grid;
+    grid-template-columns: 1fr max-content;
+    grid-column-gap: 20px;
+
+    > ul {
+      display: none !important;
+    }
+
+    ul, li, li > a {
+      display: grid;
+      grid-auto-flow: column;
+      place-items: center;
+      grid-column-gap: 10px;
+      cursor: pointer;
+      * {
+        cursor: pointer;
+      }
+    }
+
+    > nav {
+      justify-self: end;
+    }
+
+    > .header__drop-component-content {
+      display: none;
+    }
+  }
+  
+  @media (max-width: 1000px) {
+
+    > i {
+      display: inherit !important;
+      &[data-menu-icon-open="true"] {
+        color: var(--color-purple);
+      }
+    }
+
+    > div {
+      height: 0;
+      padding: 0;
+      overflow: hidden;
+
+      grid-template-columns: 1fr;
+      grid-row-gap: 10px;
+
+      &[data-mobile-menu-open="true"] {
+        height: max-content;
+        padding: 10px;
+        width: calc(100% - 20px);
+      }
+
+      position: absolute;
+      grid-template-areas:
+        "header"
+        "nav";
+      
+      > menu {
+        display: none;
+      }
+      > nav {
+        grid-area: nav;
+        justify-self: center;
+        place-self: stretch;
+        > ul {
+          grid-auto-flow: row;
+          justify-items: end;
+          grid-row-gap: 10px;
+          a > i {
+            grid-column: 2 / 3;
+          }
+          a > label {
+            grid-column: 1 / 2;
+          }
+        }
+      }
+      > .header__drop-component-content {
+        grid-area: menu;
+      } 
+      &[data-mobile-nav-selected="false"] {
+        grid-template-areas:
+          "header"
+          "menu";
+        > nav {
+          display: none;
+        }
+        > .header__drop-component-content {
+          display: grid;
+          place-items: center;
+        }
+      }
+
+      top: 60px;
+      right: 0;
+
+      background-color: white;
+      box-shadow: var(--shadow);
+
+      > .header__drop-header {
+        grid-area: header;
+        display: inherit !important;
+        grid-auto-columns: max-content;
+        border-bottom: 1px solid var(--color-grey-1);
+        > li {
+          float: right;
+          padding: 5px 10px;
+          &[data-mobile-tab-selected="true"] {
+            > i {
+              color: var(--color-purple);
+            }
+          }
+        }
+      }
+    }
+  }
+}
