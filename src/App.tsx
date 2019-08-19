@@ -5,6 +5,12 @@ import Modal from './components/modal/modal'
 import { Header } from './components/header/header'
 import { Management } from './pages'
 
+import { initializeStores } from '@piloteers/react-state'
+import { stores } from './state/stores'
+
+
+initializeStores(stores)
+
 const navItems = [
   {
     label: "Manage",

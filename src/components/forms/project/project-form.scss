@@ -1,0 +1,16 @@
+.project-form {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  grid-auto-rows: max-content;
+  .folders {
+    height: max-content;
+    padding-top: 25px;
+    .folders_folder > i:nth-of-type(2) {
+      display: none;
+    }
+  }
+  > .button {
+    grid-column: 2 / 3;
+    justify-self: end;
+  }
+}

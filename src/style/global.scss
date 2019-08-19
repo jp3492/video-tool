@@ -1,6 +1,14 @@
 @import './buttons.scss';
 
+* {
+  font-family: Roboto;
+}
+
 body {
+  margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
   margin: 0;
 }
 
@@ -10,6 +18,10 @@ i, a {
   color: inherit;
 }
 
+i {
+  color: var(--color-grey-3);
+}
+
 ul, p, menu, a {
   margin: 0;
   padding: 0;
@@ -17,4 +29,26 @@ ul, p, menu, a {
 
 ul {
   list-style-type: none;
+}
+
+input:active, input {
+  outline: none;
+  padding-left: 5px;
+}
+
+.pt-rf, .pt-rf__fields {
+  padding: 0px !important;
+  box-shadow: none !important;
+  .pt-rf__button {
+    box-shadow: none !important;
+  }
+}
+
+.pt-rf {
+  > h1, > button {
+    display: none;
+  }
+  .pt-rf__fields {
+    grid-row-gap: 0; 
+  }
 }

@@ -25,20 +25,14 @@
     overflow: auto;
     max-width: 90%;
     max-height: 90%;
-    .modal-content__body {
-      margin-left: 10px;
-      margin-right: 10px;
-    }
     > .modal-content__header {
       display: grid;
-      grid-template-columns: 40px 1fr 40px;
-      place-items: center;
       padding-bottom: 5px;
       border-bottom: 1px solid var(--color-grey-1);
       > h3 {
-        grid-column: 2 / 3;
-        font-size: 16px;
+        font-size: 18px;
         font-weight: 600;
+        justify-self: start;
         text-align: center;
       }
       > img {

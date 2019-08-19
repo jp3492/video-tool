@@ -1,0 +1,11 @@
+.tabs {
+  display: grid;
+  grid-auto-flow: column;
+  place-items: center;
+  > li {
+    padding: 5px 10px;
+    &[data-tab-selected="true"] {
+      box-shadow: inset 0px -3px 0px -1px var(--color-grey-2);
+    }
+  }
+}

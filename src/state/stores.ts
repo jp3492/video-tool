@@ -7,12 +7,22 @@ import {
 } from './reducer';
 
 export const REDUCERS = {
-  FOLDERS: 'FOLDERS'
+  FOLDERS: 'FOLDERS',
+  PROJECTS: 'PROJECTS'
 };
 
 export const stores = [
   {
     id: REDUCERS.FOLDERS,
+    reducer: REDUCER_LIST,
+    initialState: INITIAL_STATE_LIST,
+    actions: { ACTION },
+    options: {
+      resourceIdName: "_id"
+    }
+  },
+  {
+    id: REDUCERS.PROJECTS,
     reducer: REDUCER_LIST,
     initialState: INITIAL_STATE_LIST,
     actions: { ACTION },

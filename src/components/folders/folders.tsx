@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import './folders.scss'
 
 import { useFolders } from '../../utils'
@@ -10,9 +10,13 @@ interface Folder {
 }
 
 export const Folders = ({
-  folders
+  folders,
+  onChange,
+  initialSelectedFolder
 }: {
-  folders: Folder[]
+  folders: Folder[],
+  onChange: Function,
+  initialSelectedFolder?: string
 }) => {
   const {
     nestedFolders,
@@ -24,6 +28,14 @@ export const Folders = ({
     folders,
     resourceIdName: "resourceId"
   })
+
+  useEffect(() => {
+    selectFolder(initialSelectedFolder)
+  }, [initialSelectedFolder])
+
+  useEffect(() => {
+    onChange(selectedFolder)
+  }, [selectedFolder])
 
   return (
     <div className="folders">

@@ -46,6 +46,9 @@ export const ACTION = (requestOptions: RequestOptions) => async dispatch => {
     ...requestProps
   } = requestOptions;
 
+  console.log(method);
+
+
   const restMethod = getRestMethod(method);
 
   const requestId = requestProps.api + method + requestProps.url
