@@ -1,0 +1,12 @@
+.player {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--color-grey-3);
+  box-shadow: var(--shadow-inset-top-strong);
+  display: grid;
+  grid-template-columns: 1fr max-content;
+  i {
+    color: var(--color-grey-2);
+  }
+}

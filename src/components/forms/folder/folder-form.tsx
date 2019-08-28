@@ -33,11 +33,11 @@ const form = createForm({
 })
 
 export default props => {
-  const [folder, setFolder] = useState(props.selectedFolder)
+  const [folder, setFolder] = useState(props.selectedFolderId)
 
   const {
     folders,
-    selectedFolder,
+    selectedFolderId,
     action,
     initialValues
   } = props
@@ -52,13 +52,13 @@ export default props => {
   return (
     <div className="folder-form">
       <Folders
-        initialSelectedFolder={selectedFolder}
+        initialSelectedFolder={selectedFolderId}
         onChange={folder => setFolder(folder)}
         folders={folders} />
       <Form
         styleType={StyleTypeEnum.MATERIAL_OUTLINED}
         onSubmit={handleSubmit}
-        initialValues={initialValues}
+        initialValues={initialValues || {}}
         {...form} />
       <a
         onClick={() => submitForm(FormName)}

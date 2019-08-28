@@ -5,10 +5,10 @@ interface UseFolders {
   resourceIdName: string
 }
 
-const getChildFolders = (folders, parent) => folders.filter(f => f.parent === parent)
+const getChildFolders = (folders, folder) => folders.filter(f => f.folder === folder)
 
-const reduceFolders = (folders, parent, resourceIdName) =>
-  getChildFolders(folders, parent).reduce((
+const reduceFolders = (folders, folder, resourceIdName) =>
+  getChildFolders(folders, folder).reduce((
     res,
     folder
   ) => ({
@@ -24,22 +24,24 @@ export const useFolders = ({
   folders,
   resourceIdName
 }: UseFolders) => {
-  const [selectedFolder, setSelectedFolder] = useState(null)
+  const [selectedFolder, setSelectedFolder] = useState(undefined)
   const [openedFolders, setOpenedFolders]: [any, any] = useState([])
 
   const nestedFolders = useMemo(() =>
-    reduceFolders(folders, null, resourceIdName)
-    , [])
+    reduceFolders(folders, undefined, resourceIdName)
+    , [folders])
 
-  const selectFolder = useCallback(resourceId =>
-    setSelectedFolder(resourceId)
-    , [])
+  const selectFolder = useCallback(_id =>
+    selectedFolder === _id ?
+      setSelectedFolder(undefined) :
+      setSelectedFolder(_id)
+    , [selectedFolder])
 
-  const openFolder = useCallback(resourceId =>
+  const openFolder = useCallback(_id =>
     setOpenedFolders(
-      openedFolders.includes(resourceId) ?
-        openedFolders.filter(f => f !== resourceId) :
-        [...openedFolders, resourceId])
+      openedFolders.includes(_id) ?
+        openedFolders.filter(f => f !== _id) :
+        [...openedFolders, _id])
     , [openedFolders])
 
   return {

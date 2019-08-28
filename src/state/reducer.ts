@@ -46,9 +46,6 @@ export const ACTION = (requestOptions: RequestOptions) => async dispatch => {
     ...requestProps
   } = requestOptions;
 
-  console.log(method);
-
-
   const restMethod = getRestMethod(method);
 
   const requestId = requestProps.api + method + requestProps.url
@@ -73,8 +70,9 @@ export const ACTION = (requestOptions: RequestOptions) => async dispatch => {
         [requestId]: response.data.lastEvaluatedId
       }
     }
+
     return dispatch({
-      type: REQUEST_TYPES[method],
+      type: REQUEST_TYPES[method.toUpperCase()],
       data: response.data
     })
   } catch (error) {

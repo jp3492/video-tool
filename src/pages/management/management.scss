@@ -10,7 +10,7 @@
     border-right: 1px solid var(--color-grey-2);
     overflow: hidden;
     > i {
-      display: none;
+      display: none !important;
     }
 
     > a {

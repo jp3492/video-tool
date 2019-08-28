@@ -12,11 +12,15 @@ interface Folder {
 export const Folders = ({
   folders,
   onChange,
-  initialSelectedFolder
+  initialSelectedFolder,
+  setEditingFolder,
+  editingFolder
 }: {
   folders: Folder[],
   onChange: Function,
   initialSelectedFolder?: string
+  setEditingFolder?: Function,
+  editingFolder?: string | undefined
 }) => {
   const {
     nestedFolders,
@@ -26,7 +30,7 @@ export const Folders = ({
     openedFolders
   } = useFolders({
     folders,
-    resourceIdName: "resourceId"
+    resourceIdName: "_id"
   })
 
   useEffect(() => {
@@ -43,6 +47,8 @@ export const Folders = ({
         Object.keys(nestedFolders).map((folder: any, i) => (
           <Folder
             {...nestedFolders[folder]}
+            setEditingFolder={setEditingFolder}
+            editingFolder={editingFolder}
             key={i}
             selectFolder={selectFolder}
             selectedFolder={selectedFolder}
@@ -55,27 +61,29 @@ export const Folders = ({
 }
 
 const Folder = ({
-  resourceId,
+  _id,
   label,
   childFolders,
   selectFolder,
   selectedFolder,
   openFolder,
-  openedFolders
+  openedFolders,
+  setEditingFolder,
+  editingFolder
 }) => (
     <div
       className="folders_folder"
       onClick={e => {
         e.stopPropagation()
-        selectFolder(resourceId)
+        selectFolder(_id)
       }}
-      data-folder-selected={selectedFolder === resourceId}
-      data-folder-open={openedFolders.includes(resourceId)} >
+      data-folder-selected={selectedFolder === _id}
+      data-folder-open={openedFolders.includes(_id)} >
       <i
         onClick={e => {
           if (Object.keys(childFolders).length !== 0) {
             e.stopPropagation()
-            openFolder(resourceId)
+            openFolder(_id)
           }
         }}
         className="material-icons">
@@ -86,16 +94,28 @@ const Folder = ({
       <label>
         {label}
       </label>
-      <i className="material-icons">
-        more_vert
+      <i
+        onClick={e => {
+          if (selectedFolder === _id) {
+            e.stopPropagation()
+          }
+          setEditingFolder(_id)
+        }}
+        className="material-icons">
+        {
+          editingFolder === _id ?
+            "edit" :
+            "more_vert"
+        }
       </i>
       {
-        openedFolders.includes(resourceId) &&
+        openedFolders.includes(_id) &&
         <div className="folders">
           {
             Object.keys(childFolders).map((folder: any, i) => (
               <Folder
                 {...childFolders[folder]}
+                setEditingFolder={setEditingFolder}
                 key={i}
                 data-folder-selected={selectedFolder === folder}
                 data-folder-open={openedFolders.includes(folder)}

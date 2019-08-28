@@ -19,6 +19,8 @@ i, a {
 }
 
 i {
+  display: grid !important;
+  place-content: center;
   color: var(--color-grey-3);
 }
 

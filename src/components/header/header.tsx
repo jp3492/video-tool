@@ -20,7 +20,8 @@ interface iComponent {
 interface iHeader {
   logo?: string,
   navItems?: iMenuItem[],
-  components?: iComponent[]
+  components?: iComponent[],
+  [key: string]: any
 }
 
 export const Header = ({
@@ -51,7 +52,7 @@ export const Header = ({
   }, [selectedTab])
 
   return (
-    <header>
+    <header id="header">
       <img
         src={logo}
         height="50px"

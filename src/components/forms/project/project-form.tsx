@@ -37,7 +37,8 @@ export default props => {
   const {
     folders,
     selectedFolder,
-    action
+    action,
+    initialValues
   } = props
 
   const handleSubmit = values => {
@@ -56,6 +57,7 @@ export default props => {
       <Form
         styleType={StyleTypeEnum.MATERIAL_OUTLINED}
         onSubmit={handleSubmit}
+        initialValues={initialValues || {}}
         {...form} />
       <a
         onClick={() => submitForm(FormName)}

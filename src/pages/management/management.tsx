@@ -31,64 +31,78 @@ export const Management = (props: any) => {
   const { state: { data: folders }, actions: { ACTION: FOLDER_ACTION } } = quantumReducer({ id: REDUCERS.FOLDERS })
   const { state: { data: projects }, actions: { ACTION: PROJECT_ACTION } } = quantumReducer({ id: REDUCERS.PROJECTS })
 
-  const { statuses, isLoading } = getRequestStatus({
-    ...folderRequests,
-    ...projectRequests
-  })
+  const { statuses, isLoading } = getRequestStatus({ ...folderRequests, ...projectRequests })
 
   const [_, openModal] = quantumState({ id: MODAL, returnValue: false })
   const [sideBarOpen, openSideBar] = useState(false)
   const [search, setSearch] = useState("")
-  const [selectedProjectId, setSelectedProjectId] = useState(null)
-  const [selectedFolderId, setSelectedFolderId] = useState(null)
+  const [selectedProjectId, setSelectedProjectId] = useState()
+  const [selectedFolderId, setSelectedFolderId] = useState()
+  const [editingFolder, setEditingFolder] = useState()
 
   useEffect(() => {
-    FOLDER_ACTION(projectRequests.get)
-    PROJECT_ACTION(folderRequests.get)
+    FOLDER_ACTION(folderRequests.get)
+    PROJECT_ACTION(projectRequests.get)
   }, [])
 
-  const postFolder = body => FOLDER_ACTION({
-    ...folderRequests.post,
-    body
-  }).then(() => openModal({}))
+  const postFolder = body => FOLDER_ACTION({ ...folderRequests.post, body }).then(() => openModal({}))
+  const postProject = body => PROJECT_ACTION({ ...projectRequests.post, body }).then(() => openModal({}))
 
-  const postProject = body => PROJECT_ACTION({
-    ...projectRequests.post,
-    body
-  }).then(() => openModal({}))
+  const patchFolder = (_id, body) => FOLDER_ACTION({ ...folderRequests.patch, url: folderRequests.patch.url + _id, body }).then(() => openModal({}))
+  const patchProject = (_id, body) => FOLDER_ACTION({ ...projectRequests.patch, url: projectRequests.patch.url + _id, body }).then(() => openModal({}))
 
-  const folderModal = useCallback(initialValues => openModal({
-    title: initialValues ? "Edit Folder" : "New Folder",
-    name: MODAL_TYPES.FOLDER_FORM,
-    props: {
-      folders,
-      selectedFolderId,
-      action: postFolder,
-      initialValues
-    }
-  }), [folders, selectedFolderId])
+  const deleteFolder = _id => FOLDER_ACTION({ ...folderRequests.delete, url: folderRequests.patch.url + _id }).then(() => openModal({}))
+  const deleteProject = _id => FOLDER_ACTION({ ...projectRequests.delete, url: projectRequests.patch.url + _id }).then(() => openModal({}))
 
-  const projectModal = useCallback(initialValues => openModal({
+  const folderModal = useCallback((initialValues?: any) => {
+
+    openModal({
+      title: initialValues ? "Edit Folder" : "New Folder",
+      name: MODAL_TYPES.FOLDER_FORM,
+      props: {
+        folders,
+        selectedFolderId,
+        action: initialValues ? patchFolder : postFolder,
+        initialValues
+      }
+    })
+  }, [folders, selectedFolderId])
+
+  const projectModal = useCallback((initialValues?: any) => openModal({
     title: initialValues ? "Edit Project" : "New Project",
     name: MODAL_TYPES.PROJECT_FORM,
     props: {
       folders,
       selectedFolderId,
-      action: postProject,
+      action: initialValues ? patchProject : postProject,
       initialValues
     }
   }), [folders, selectedFolderId])
 
-  const selectedFolder = useMemo(() => folders.find(f => f.resourceId === selectedFolderId), [selectedFolderId, folders])
+  const handleEditingFolder = folder => {
+    if (editingFolder === folder) {
+      setEditingFolder(undefined)
+    } else {
+      setEditingFolder(folder)
+    }
+  }
 
-  const selectProject = useCallback(resourceId => setSelectedProjectId(resourceId), [])
+  const selectedFolder = useMemo(() => folders.find(f => f._id === selectedFolderId), [selectedFolderId, folders])
 
-  const selectedProject = useMemo(() => projects.find(p => p.resourceId === selectedProjectId) || {}, [selectedProjectId, projects])
-
+  const selectProject = useCallback(_id => setSelectedProjectId(_id), [])
+  const selectedProject = useMemo(() => projects.find(p => p._id === selectedProjectId) || {}, [selectedProjectId, projects])
   const filteredProjects = useMemo(() => projects.filter(p => p.folder === selectedFolderId), [selectedFolderId, projects])
 
+  const getClipBoard = e => {
+    e.preventDefault()
+    console.log(e.dataTransfer.getData("text"))
+  }
+
   return (
-    <div className="management">
+    <div
+      onDragOver={e => e.preventDefault()}
+      onDrop={getClipBoard}
+      className="management">
       <div
         data-sidebar-open={sideBarOpen}
         className="management__sidebar">
@@ -98,7 +112,7 @@ export const Management = (props: any) => {
           chevron_right
         </i>
         <a
-          onClick={folderModal}
+          onClick={e => folderModal()}
           className="button">
           <i
             className="material-icons">
@@ -110,6 +124,8 @@ export const Management = (props: any) => {
         </a>
         <Folders
           onChange={folder => setSelectedFolderId(folder)}
+          setEditingFolder={handleEditingFolder}
+          editingFolder={editingFolder}
           folders={folders} />
       </div>
       <div className="management__content">
@@ -120,15 +136,15 @@ export const Management = (props: any) => {
               value={search}
               onChange={({ target: { value } }) => setSearch(value)} />
             <a
-              onClick={projectModal}
+              onClick={() => projectModal()}
               className="button">
               <i
                 className="material-icons">
                 add
-            </i>
+              </i>
               <label>
                 New Project
-            </label>
+              </label>
             </a>
           </div>
           <ul className="management__content__content">
@@ -136,32 +152,38 @@ export const Management = (props: any) => {
               filteredProjects.map(p => (
                 <Project
                   {...p}
-                  selected={p.resourceId === selectedProjectId}
+                  selected={p._id === selectedProjectId}
                   selectProject={selectProject} />
               ))
             }
           </ul>
         </div>
         {
-          selectedProjectId !== null &&
-          <Information
-            closeInfo={() => setSelectedProjectId(null)}
-            {...selectedProject} />
+          !!editingFolder ?
+            <Information
+              handleEdit={() => folderModal(selectedFolder)}
+              closeInfo={() => setEditingFolder(undefined)}
+              {...selectedFolder} /> :
+            selectedProjectId &&
+            <Information
+              handleEdit={() => projectModal(selectProject)}
+              closeInfo={() => setSelectedProjectId(undefined)}
+              {...selectedProject} />
         }
       </div>
     </div>
   )
 }
 
-interface iInformation {
-  label?: string,
-  closeInfo: Function
-}
-
 const Information = ({
   label,
-  closeInfo
-}: iInformation) => {
+  closeInfo,
+  handleEdit
+}: {
+  label?: string,
+  closeInfo: Function,
+  handleEdit: any
+}) => {
   const [selectedTab, selectTab] = useState("Details")
 
   return (
@@ -188,6 +210,11 @@ const Information = ({
           <Access />
       }
       <ul className="management__content__information-footer">
+        <li onClick={handleEdit}>
+          <label className="button">
+            Edit
+          </label>
+        </li>
         <li>
           <label className="button">
             Publish
@@ -219,10 +246,9 @@ const Access = () => {
   )
 }
 
-
 const Project = ({
   label,
-  resourceId,
+  _id,
   selected,
   selectProject
 }) => {
@@ -230,7 +256,7 @@ const Project = ({
   return (
     <li
       data-file-selected={selected}
-      onClick={() => selectProject(resourceId)}>
+      onClick={() => selectProject(_id)}>
       <label>
         {label}
       </label>
