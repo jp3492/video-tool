@@ -80,7 +80,7 @@ export const ACTION = (requestOptions: RequestOptions) => async dispatch => {
       type: REQUEST_TYPES.ERROR,
       data: error
     });
-    throw Error(error)
+    console.error(error)
   }
 };
 

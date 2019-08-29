@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@piloteers/react-authentication": "^1.1.4",
+    "@piloteers/react-authentication": "^1.1.8",
     "@piloteers/react-form": "^1.1.2",
     "@piloteers/react-state": "^1.0.1",
     "@reach/router": "^1.2.1",

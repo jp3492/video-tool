@@ -1,12 +1,17 @@
 .player-playlist {
-  position: fixed;
   top: 0;
   right: 0;
   width: 400px;
   display: grid;
   grid-template-rows: 40px max-content;
+  grid-column: 2 / 3;
+  overflow: auto;
 
-  max-height: calc(100% - 90px);
+  &[data-playlist-open="true"] {
+    width: 0;
+    overflow: hidden;
+  }
+
   > .player-playlist__header {
     display: grid;
     grid-template-columns: 1fr max-content;

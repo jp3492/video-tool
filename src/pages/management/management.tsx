@@ -31,7 +31,7 @@ export const Management = (props: any) => {
   const { state: { data: folders }, actions: { ACTION: FOLDER_ACTION } } = quantumReducer({ id: REDUCERS.FOLDERS })
   const { state: { data: projects }, actions: { ACTION: PROJECT_ACTION } } = quantumReducer({ id: REDUCERS.PROJECTS })
 
-  const { statuses, isLoading } = getRequestStatus({ ...folderRequests, ...projectRequests })
+  const { statuses, isLoading } = getRequestStatus({ requests: { ...folderRequests, ...projectRequests } })
 
   const [_, openModal] = quantumState({ id: MODAL, returnValue: false })
   const [sideBarOpen, openSideBar] = useState(false)
@@ -54,19 +54,16 @@ export const Management = (props: any) => {
   const deleteFolder = _id => FOLDER_ACTION({ ...folderRequests.delete, url: folderRequests.patch.url + _id }).then(() => openModal({}))
   const deleteProject = _id => FOLDER_ACTION({ ...projectRequests.delete, url: projectRequests.patch.url + _id }).then(() => openModal({}))
 
-  const folderModal = useCallback((initialValues?: any) => {
-
-    openModal({
-      title: initialValues ? "Edit Folder" : "New Folder",
-      name: MODAL_TYPES.FOLDER_FORM,
-      props: {
-        folders,
-        selectedFolderId,
-        action: initialValues ? patchFolder : postFolder,
-        initialValues
-      }
-    })
-  }, [folders, selectedFolderId])
+  const folderModal = useCallback((initialValues?: any) => openModal({
+    title: initialValues ? "Edit Folder" : "New Folder",
+    name: MODAL_TYPES.FOLDER_FORM,
+    props: {
+      folders,
+      selectedFolderId,
+      action: initialValues ? patchFolder : postFolder,
+      initialValues
+    }
+  }), [folders, selectedFolderId])
 
   const projectModal = useCallback((initialValues?: any) => openModal({
     title: initialValues ? "Edit Project" : "New Project",

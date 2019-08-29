@@ -1,48 +1,91 @@
+import { REQUEST_TYPES } from './reducer'
+
 export const requests = {
   folders: {
     get: {
       api: "CONTENT",
-      method: "get",
-      url: "/folder"
+      method: "GET",
+      url: "/folder",
+      trackId: "getFolders"
     },
     patch: {
       api: "CONTENT",
-      method: "patch",
-      url: "/folder/" // need to overwtrite with id
+      method: "PATCH",
+      url: "/folder/",
+      trackId: "patchFolder" // need to overwtrite with id
     },
     post: {
       api: "CONTENT",
-      method: "post",
-      url: "/folder"
+      method: "POST",
+      url: "/folder",
+      trackId: "postFolder"
       // need to overwrite and add body
     },
     delete: {
       api: "CONTENT",
-      method: "delete",
-      url: "/folder/" // need to overwrite with id
+      method: "DELETE",
+      url: "/folder/",
+      trackId: "deleteFolder" // need to overwrite with id
     }
   },
   projects: {
     get: {
       api: "CONTENT",
-      method: "get",
-      url: "/project"
+      method: "GET",
+      url: "/project",
+      trackId: "getProjects"
     },
     patch: {
       api: "CONTENT",
-      method: "patch",
-      url: "/project/" // need to overwtrite with id
+      method: "PATCH",
+      url: "/project/",
+      trackId: "patchProject" // need to overwtrite with id
     },
     post: {
       api: "CONTENT",
-      method: "post",
-      url: "/project"
+      method: "POST",
+      url: "/project",
+      trackId: "postProject"
       // need to overwrite and add body
     },
     delete: {
       api: "CONTENT",
-      method: "delete",
-      url: "/project/" // need to overwrite with id
+      method: "DELETE",
+      url: "/project/",
+      trackId: "deleteProject" // need to overwrite with id
     }
   },
+  users: {
+    get: {
+      api: "CONTENT",
+      method: "GET",
+      url: "/user",
+      trackId: "getUsers"
+    },
+    getSingle: {
+      api: "CONTENT",
+      method: "GET_SINGLE",
+      url: "/user/",
+      trackId: "getUser"
+    },
+    patch: {
+      api: "CONTENT",
+      method: "PATCH",
+      url: "/user/",
+      trackId: "patchUser" // need to overwtrite with id
+    },
+    post: {
+      api: "CONTENT",
+      method: "POST",
+      url: "/user",
+      trackId: "postUser"
+      // need to overwrite and add body
+    },
+    delete: {
+      api: "CONTENT",
+      method: "DELETE",
+      url: "/user/",
+      trackId: "deleteUser" // need to overwrite with id
+    }
+  }
 }

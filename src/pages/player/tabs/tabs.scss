@@ -11,9 +11,27 @@
       width: max-content;
       color: var(--color-grey-2);
       text-shadow: 0 0 10px var(--color-grey-2);
+
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: max-content;
+      place-items: center;
+      grid-column-gap: 20px;
+
+      border-right: 1px solid var(--color-grey-3);
+
+      &:last-of-type {
+        border-right: none;
+      }
       &:hover {
         color: var(--color-amber);
         cursor: pointer;
+        > i {
+          color: var(--color-amber);
+        }
+        > label {
+          cursor: pointer;
+        }
       }
     }
   }

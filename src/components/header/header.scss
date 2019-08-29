@@ -23,6 +23,10 @@ header {
     grid-template-columns: 1fr max-content;
     grid-column-gap: 20px;
 
+    .header__menu {
+      display: grid;
+    }
+
     > ul {
       display: none !important;
     }

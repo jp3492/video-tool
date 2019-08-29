@@ -1,21 +1,24 @@
 import React, { memo, lazy, Suspense, useState } from 'react'
 import './modal.scss'
-import { quantumState } from "@piloteers/react-state";
+import { quantumState } from "@piloteers/react-state"
 
-const folderForm = lazy(() => import('../forms/folder/folder-form'));
-const projectForm = lazy(() => import('../forms/project/project-form'));
+const folderForm = lazy(() => import('../forms/folder/folder-form'))
+const projectForm = lazy(() => import('../forms/project/project-form'))
+const userForm = lazy(() => import('../forms/user/user-form'))
 
 const CONTENT = {
   FOLDER_FORM: folderForm,
-  PROJECT_FORM: projectForm
-};
+  PROJECT_FORM: projectForm,
+  USER_FORM: userForm
+}
 
 export const MODAL_TYPES = {
   FOLDER_FORM: "FOLDER_FORM",
-  PROJECT_FORM: "PROJECT_FORM"
-};
+  PROJECT_FORM: "PROJECT_FORM",
+  USER_FORM: "USER_FORM"
+}
 
-export const MODAL = "MODAL";
+export const MODAL = "MODAL"
 
 export const INITIAL_VALUE = {
   name: null,
@@ -23,13 +26,13 @@ export const INITIAL_VALUE = {
   title: "No Title passed",
   type: '',
   onClose: null
-};
+}
 
 export default memo(() => {
-  const [modal, setModal] = quantumState({ id: MODAL, initialValue: INITIAL_VALUE });
-  const [mouseDown, setMouseDown] = useState(false);
+  const [modal, setModal] = quantumState({ id: MODAL, initialValue: INITIAL_VALUE })
+  const [mouseDown, setMouseDown] = useState(false)
 
-  const { name = null, props = {}, title = null, onClose = null, type = '' } = modal;
+  const { name = null, props = {}, title = null, onClose = null, type = '' } = modal
 
   if (name === null || !name) {
     document.body.style.overflow = "auto"
@@ -41,17 +44,17 @@ export default memo(() => {
       onClose()
     }
     setModal(INITIAL_VALUE)
-  };
+  }
 
   const renderComponent = (name: string) => {
-    const SelectedComponent = CONTENT[name];
+    const SelectedComponent = CONTENT[name]
     return <SelectedComponent onClick={e => e.stopPropagation()} {...props} closeModal={closeModal} />
-  };
+  }
 
-  const handelMouseDown = e => setMouseDown(e.target === e.currentTarget);
-  const handleMouseUp = () => mouseDown && closeModal();
+  const handelMouseDown = e => setMouseDown(e.target === e.currentTarget)
+  const handleMouseUp = () => mouseDown && closeModal()
 
-  document.body.style.overflow = "hidden";
+  document.body.style.overflow = "hidden"
 
   return (
     <>

@@ -1,10 +1,18 @@
 import React, { useState } from 'react'
 import './playlist.scss'
 
+import { PLAYER_STATES } from '../states'
+import { quantumState } from '@piloteers/react-state'
+
 export const Playlist = () => {
+  const [playlistOpen, setPlaylistOpen] = quantumState({ id: PLAYER_STATES.PLAYLIST_OPEN })
+  console.log(playlistOpen);
+
   const [search, setSearch] = useState("")
   return (
-    <div className="player-playlist">
+    <div
+      data-playlist-open={playlistOpen}
+      className="player-playlist">
       <div className="player-playlist__header">
         <input placeholder="Search.." value={search} onChange={({ target: { value } }) => setSearch(value)} />
         <i className="material-icons">

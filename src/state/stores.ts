@@ -8,7 +8,8 @@ import {
 
 export const REDUCERS = {
   FOLDERS: 'FOLDERS',
-  PROJECTS: 'PROJECTS'
+  PROJECTS: 'PROJECTS',
+  USERS: 'USERS'
 };
 
 export const stores = [
@@ -23,6 +24,15 @@ export const stores = [
   },
   {
     id: REDUCERS.PROJECTS,
+    reducer: REDUCER_LIST,
+    initialState: INITIAL_STATE_LIST,
+    actions: { ACTION },
+    options: {
+      resourceIdName: "_id"
+    }
+  },
+  {
+    id: REDUCERS.USERS,
     reducer: REDUCER_LIST,
     initialState: INITIAL_STATE_LIST,
     actions: { ACTION },

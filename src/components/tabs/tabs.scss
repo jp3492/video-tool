@@ -4,8 +4,12 @@
   place-items: center;
   > li {
     padding: 5px 10px;
+    cursor: pointer;
     &[data-tab-selected="true"] {
       box-shadow: inset 0px -3px 0px -1px var(--color-grey-2);
+    }
+    > * {
+      cursor: pointer;
     }
   }
 }

@@ -1,0 +1,11 @@
+.auth_wrapper {
+  height: 70vh;
+  display: grid;
+  place-items: center;
+  
+  .ptf__authentication__form {
+    border-radius: 4px;
+    box-shadow: var(--shadow-strong);
+    background-color: var(--color-grey-2);
+  }
+}
