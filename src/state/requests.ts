@@ -35,6 +35,12 @@ export const requests = {
       url: "/project",
       trackId: "getProjects"
     },
+    getSingle: {
+      api: "CONTENT",
+      method: "GET_SINGLE",
+      url: "/project/",
+      trackId: "getSingleProject"
+    },
     patch: {
       api: "CONTENT",
       method: "PATCH",

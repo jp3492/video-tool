@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import './project-form.scss'
-
+import ReactPlayer from 'react-player'
 import { createForm, Form, StyleTypeEnum, submitForm } from '@piloteers/react-form'
 
 import { Folders } from '../../folders/folders'
@@ -23,30 +23,27 @@ const form = createForm({
       label: "Description",
       type: "input",
       inputType: "text"
-    },
-    tags: {
-      label: "Tags",
-      type: "array",
-      inputType: "text"
     }
   }
 })
 
 export default props => {
   const [folder, setFolder] = useState(props.selectedFolder)
-  const {
-    folders,
-    selectedFolder,
-    action,
-    initialValues
-  } = props
+  const [links, setLinks]: [any, any] = useState(props.initialValues.links || [])
 
-  const handleSubmit = values => {
-    action({
-      ...values,
-      folder
-    })
-  }
+  const { folders, selectedFolder, action, initialValues } = props
+
+  const handleSubmit = values => action({ ...values, folder, links }, initialValues._id)
+
+  const handleLinkAdded = url =>
+    ReactPlayer.canPlay(url) ?
+      links.every(l => l.url !== url) &&
+      setLinks([...links, { url, label: "" }]) :
+      alert("Url doesnt contain supported video")
+
+  const changeLinkLabel = (url, label) => setLinks(links.map(l => l.url === url ? { ...l, label } : l))
+
+  const removeLink = url => setLinks(links.filter(l => l.url !== url))
 
   return (
     <div className="project-form">
@@ -59,6 +56,24 @@ export default props => {
         onSubmit={handleSubmit}
         initialValues={initialValues || {}}
         {...form} />
+      <input type="text" placeholder="Paste Video Link" onChange={({ target: { value } }) => handleLinkAdded(value)} value="" />
+      <ul className="project-form__links">
+        {
+          links.map((l, i) => (
+            <li key={i}>
+              <input placeholder="Video Name" type="text" value={l.label} onChange={({ target: { value } }) => changeLinkLabel(l.url, value)} />
+              <label>
+                {l.url}
+              </label>
+              <i
+                onClick={() => removeLink(l.url)}
+                className="material-icons">
+                clear
+              </i>
+            </li>
+          ))
+        }
+      </ul>
       <a
         onClick={() => submitForm(FormName)}
         className="button">

@@ -19,4 +19,10 @@
       right: 5px;
     }
   }
+  .player__loading {
+    display: grid;
+    place-content: center;
+    font-size: 24px;
+    color: var(--color-grey-1);
+  }
 }

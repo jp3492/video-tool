@@ -5,6 +5,8 @@ import { getRequestStatus } from '@piloteers/react-authentication'
 import { quantumState, quantumReducer } from '@piloteers/react-state'
 import { REDUCERS } from '../../state/stores'
 
+import { Link } from '@reach/router'
+
 import { MODAL, MODAL_TYPES } from '../../components/modal/modal'
 import { Folders } from '../../components/folders/folders'
 import { Tabs } from '../../components/tabs/tabs'
@@ -49,7 +51,7 @@ export const Management = (props: any) => {
   const postProject = body => PROJECT_ACTION({ ...projectRequests.post, body }).then(() => openModal({}))
 
   const patchFolder = (_id, body) => FOLDER_ACTION({ ...folderRequests.patch, url: folderRequests.patch.url + _id, body }).then(() => openModal({}))
-  const patchProject = (_id, body) => FOLDER_ACTION({ ...projectRequests.patch, url: projectRequests.patch.url + _id, body }).then(() => openModal({}))
+  const patchProject = (body, _id) => PROJECT_ACTION({ ...projectRequests.patch, url: projectRequests.patch.url + _id, body }).then(() => openModal({}))
 
   const deleteFolder = _id => FOLDER_ACTION({ ...folderRequests.delete, url: folderRequests.patch.url + _id }).then(() => openModal({}))
   const deleteProject = _id => FOLDER_ACTION({ ...projectRequests.delete, url: projectRequests.patch.url + _id }).then(() => openModal({}))
@@ -163,7 +165,7 @@ export const Management = (props: any) => {
               {...selectedFolder} /> :
             selectedProjectId &&
             <Information
-              handleEdit={() => projectModal(selectProject)}
+              handleEdit={() => projectModal(selectedProject)}
               closeInfo={() => setSelectedProjectId(undefined)}
               {...selectedProject} />
         }
@@ -175,11 +177,13 @@ export const Management = (props: any) => {
 const Information = ({
   label,
   closeInfo,
-  handleEdit
+  handleEdit,
+  _id
 }: {
   label?: string,
   closeInfo: Function,
-  handleEdit: any
+  handleEdit: any,
+  _id: string
 }) => {
   const [selectedTab, selectTab] = useState("Details")
 
@@ -213,9 +217,11 @@ const Information = ({
           </label>
         </li>
         <li>
-          <label className="button">
-            Publish
+          <Link to={`/player?_id=${_id}`}>
+            <label className="button">
+              Open
           </label>
+          </Link>
         </li>
         <li>
           <label className="button">

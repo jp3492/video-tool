@@ -34,17 +34,12 @@ export default props => {
     initialValues
   } = props
 
-  const iVal = {
-    email: initialValues.email,
-    ...initialValues.information
-  }
-
   return (
     <div>
       <Form
         styleType={StyleTypeEnum.MATERIAL_OUTLINED}
         onSubmit={action}
-        initialValues={iVal || {}}
+        initialValues={initialValues || {}}
         {...form} />
       <a
         onClick={() => submitForm(FormName)}

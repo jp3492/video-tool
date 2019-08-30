@@ -43,7 +43,7 @@ export const Users = (props: any) => {
     props: {
       selectedUserId,
       action: initialValues ? patchUser : postUser,
-      initialValues
+      initialValues: initialValues ? { email: initialValues.email, firstName: initialValues.information.firstName, lastName: initialValues.information.lastName } : {}
     }
   }), [users, selectedUserId])
 

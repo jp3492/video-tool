@@ -127,7 +127,7 @@
         display: grid;
         grid-row-gap: 10px;
         padding: 10px;
-        > li {
+        > li, li > a {
           display: grid;
           justify-content: stretch;
           align-items: center;

@@ -6,7 +6,6 @@ import './style/variables.css'
 import './style/global.scss'
 
 import { setApis, configure, IdentityAttributesEnum, UserAttributesEnum, InterfaceViewEnum } from '@piloteers/react-authentication'
-
 import { apis, COGNITO } from './config'
 
 configure({

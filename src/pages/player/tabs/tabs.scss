@@ -33,6 +33,11 @@
           cursor: pointer;
         }
       }
+      &[data-tab-selected="true"] {
+        > i:first-of-type {
+          color: var(--color-amber);
+        }
+      }
     }
   }
 }

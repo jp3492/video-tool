@@ -35,7 +35,7 @@ interface Action {
   data: any
 }
 
-const getRestMethod = method => method.includes("_") ? method.split("_")[0].toLowerCase() : method.toLowerCase();
+const getRestMethod = method => method.includes("_") ? method.split("_")[0].toLowerCase() : method.toLowerCase()
 
 let paginationStatus: any = {}
 
@@ -44,9 +44,9 @@ export const ACTION = (requestOptions: RequestOptions) => async dispatch => {
     method,
     resetPagination = false,
     ...requestProps
-  } = requestOptions;
+  } = requestOptions
 
-  const restMethod = getRestMethod(method);
+  const restMethod = getRestMethod(method)
 
   const requestId = requestProps.api + method + requestProps.url
 
@@ -79,10 +79,10 @@ export const ACTION = (requestOptions: RequestOptions) => async dispatch => {
     dispatch({
       type: REQUEST_TYPES.ERROR,
       data: error
-    });
+    })
     console.error(error)
   }
-};
+}
 
 interface InitialState {
   data: any,
@@ -95,7 +95,7 @@ export const INITIAL_STATE: InitialState = {
     name: "",
     message: ""
   }
-};
+}
 
 export const REDUCER = (state: InitialState, action: Action, options: any) => {
   switch (action.type) {
@@ -103,7 +103,7 @@ export const REDUCER = (state: InitialState, action: Action, options: any) => {
       return {
         ...state,
         error: action.data
-      };
+      }
     default:
       return {
         data: action.data,
@@ -113,7 +113,7 @@ export const REDUCER = (state: InitialState, action: Action, options: any) => {
         }
       }
   }
-};
+}
 
 export const INITIAL_STATE_LIST: InitialState = {
   data: [],
@@ -121,54 +121,54 @@ export const INITIAL_STATE_LIST: InitialState = {
     name: "",
     message: ""
   }
-};
+}
 
-const itemMethods = [REQUEST_TYPES.GET_SINGLE, REQUEST_TYPES.PATCH, REQUEST_TYPES.POST, REQUEST_TYPES.DELETE];
+const itemMethods = [REQUEST_TYPES.GET_SINGLE, REQUEST_TYPES.PATCH, REQUEST_TYPES.POST, REQUEST_TYPES.DELETE]
 
 export const REDUCER_LIST = (state: InitialState, action: Action, options: any) => {
 
   const {
     type,
     data
-  } = action;
+  } = action
 
-  const resourceIdName = options && options.resourceIdName ? options.resourceIdName : 'resourceId';
+  const resourceIdName = options && options.resourceIdName ? options.resourceIdName : 'resourceId'
 
-  const newData = itemMethods.includes(REQUEST_TYPES[type]) ? data : data.items;
+  const newData = itemMethods.includes(REQUEST_TYPES[type]) ? data : data.items
 
   const newDataState = (() => {
     switch (type) {
       case REQUEST_TYPES.GET:
-        return mergeArrayByKey(resourceIdName, state.data, newData);
+        return mergeArrayByKey(resourceIdName, state.data, newData)
       case REQUEST_TYPES.GET_ALL:
-        return newData;
+        return newData
       case REQUEST_TYPES.GET_SINGLE:
-        return mergeArrayByKey(resourceIdName, state.data, [newData]);
+        return mergeArrayByKey(resourceIdName, state.data, [newData])
       case REQUEST_TYPES.POST:
-        return [...state.data, newData];
+        return [...state.data, newData]
       case REQUEST_TYPES.POST_ALL:
-        return newData;
+        return newData
       case REQUEST_TYPES.POST_MULTIPLE:
-        return [...state.data, ...newData];
+        return [...state.data, ...newData]
       case REQUEST_TYPES.PATCH:
-        return state.data.map(item => item[resourceIdName] === newData[resourceIdName] ? newData : item);
+        return state.data.map(item => item[resourceIdName] === newData[resourceIdName] ? newData : item)
       case REQUEST_TYPES.PATCH_MULTIPLE:
-        return mergeArrayByKey(resourceIdName, state.data, newData);
+        return mergeArrayByKey(resourceIdName, state.data, newData)
       case REQUEST_TYPES.DELETE:
-        return state.data.filter(item => item[resourceIdName] !== newData[resourceIdName]);
+        return state.data.filter(item => item[resourceIdName] !== newData[resourceIdName])
       case REQUEST_TYPES.DELETE_MULTIPLE:
-        return state.data.filter(item => !newData.includes(item[resourceIdName]));
+        return state.data.filter(item => !newData.includes(item[resourceIdName]))
       default:
         return state.data
     }
-  })();
+  })()
 
   switch (action.type) {
     case REQUEST_TYPES.ERROR:
       return {
         ...state,
         error: action.data
-      };
+      }
     default:
       return {
         data: newDataState,
@@ -178,4 +178,4 @@ export const REDUCER_LIST = (state: InitialState, action: Action, options: any) 
         }
       }
   }
-};
+}
