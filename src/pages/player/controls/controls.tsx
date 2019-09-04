@@ -3,71 +3,35 @@ import './controls.scss'
 
 import { PLAYER_STATES, INPUT_STATES, TIME_SELECTED_STATES } from '../states'
 import { quantumState } from '@piloteers/react-state'
+import { Tabs } from './tabs/tabs'
+import { Input } from './input/input'
+import { PlayerConfig } from './config/config'
 
-export const Controls = () => {
-  const [playing, setPlaying] = quantumState({ id: PLAYER_STATES.PLAYING, initialValue: false })
-
-  const playingIcon = useMemo(() =>
-    playing ?
-      "pause" :
-      "play_arrow"
-    , [])
+export const Controls = ({
+  links
+}: {
+  links: any[]
+}) => {
+  const [playlistOpen, setPlaylistOpen] = quantumState({ id: PLAYER_STATES.PLAYLIST_OPEN, initialValue: true })
 
   return (
     <div className="player-controls">
-      <ul>
-        <li
-          onClick={() => setPlaying(!playing)}>
-          <i className="material-icons">
-            {playingIcon}
-          </i>
-        </li>
-        <li>
-          <i className="material-icons">
-            fast_rewind
-          </i>
-        </li>
-        <li>
-          <i className="material-icons">
-            fast_forward
-          </i>
-        </li>
-        <li>
-          <i className="material-icons">
-            add
-          </i>
-        </li>
-        <li>
-          <i className="material-icons">
-            remove
-          </i>
-        </li>
-        <li>
-          <i className="material-icons">
-            skip_previous
-          </i>
-        </li>
-        <li>
-          <i className="material-icons">
-            skip_next
-          </i>
-        </li>
-        <li>
-          <i className="material-icons">
-            keyboard_arrow_down
-          </i>
-        </li>
-        <li>
-          <i className="material-icons">
-            keyboard_arrow_up
-          </i>
-        </li>
-        <li>
-          <i className="material-icons">
-            volume_up
-          </i>
-        </li>
-      </ul>
+      <i className="material-icons">
+        home
+      </i>
+      <Tabs links={links} />
+      <PlayerConfig />
+      <Input />
+      <i
+        onClick={() => setPlaylistOpen(!playlistOpen)}
+        id="playlistToggle"
+        className="material-icons">
+        {
+          !playlistOpen ?
+            "keyboard_arrow_right" :
+            "keyboard_arrow_left"
+        }
+      </i>
     </div>
   )
 }

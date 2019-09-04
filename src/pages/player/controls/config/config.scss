@@ -1,0 +1,32 @@
+.player-config {
+  position: relative;
+  > .player-config__popup {
+    position: absolute;
+    display: grid;
+    bottom: 50px;
+    right: 0px;
+    z-index: 1;
+    background-color: var(--color-grey-3);
+    padding: 5px;
+    width: max-content;
+    display: none;
+    &[data-action-open]
+    > ul {
+      display: grid;
+      grid-row-gap: 5px;
+      > li {
+        display: grid;
+        grid-template-columns: max-content max-content;
+        > input {
+          width: 60px;
+          background-color: var(--color-grey-2);
+        }
+        &[data-action-selected="true"] {
+          > input {
+            background-color: var(--color-grey-1);
+          }
+        }
+      }
+    }
+  }
+}

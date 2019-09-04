@@ -1,14 +1,28 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import './playlist.scss'
 
 import { PLAYER_STATES } from '../states'
-import { quantumState } from '@piloteers/react-state'
+import { quantumState, quantumReducer } from '@piloteers/react-state'
+import { REDUCERS } from '../../../state/stores'
 
 export const Playlist = () => {
+  const { state: { data: tags }, actions: { ACTION } } = quantumReducer({ id: REDUCERS.TAGS })
   const [playlistOpen, setPlaylistOpen] = quantumState({ id: PLAYER_STATES.PLAYLIST_OPEN })
-  console.log(playlistOpen);
+  const [players] = quantumState({ id: PLAYER_STATES.VIDEO_PLAYERS })
+  const [selectedTab, setSelectedTab] = quantumState({ id: PLAYER_STATES.TAB_SELECTED, returnValue: false })
+  const [playing, setPlaying] = quantumState({ id: PLAYER_STATES.PLAYING })
 
   const [search, setSearch] = useState("")
+
+  const handleSelectTag = (url, start) => {
+    const activePlayer = players[url]
+    setSelectedTab(url)
+    activePlayer.seekTo(start, 'seconds')
+    if (!playing) {
+      setPlaying(true)
+    }
+  }
+
   return (
     <div
       data-playlist-open={playlistOpen}
@@ -21,32 +35,44 @@ export const Playlist = () => {
       </div>
       <ul className="player-playlist__list">
         {
-          Array(20).fill(null).map(i => (<Item />))
+          tags.map((i, ind) => <Item key={ind} {...i} handleSelectTag={handleSelectTag} />)
         }
       </ul>
     </div>
   )
 }
 
-const Item = () => {
+const Item = ({
+  text,
+  start,
+  end,
+  url,
+  handleSelectTag
+}: {
+  text: string,
+  start: number,
+  end: number,
+  url: string,
+  handleSelectTag: Function
+}) => {
 
   return (
-    <li>
+    <li onClick={() => handleSelectTag(url, start)}>
       <div>
         <label>
           Video 1
             </label>
         <span>
-          12.04s - 23.23s
-            </span>
+          {`${start} - ${end}`}
+        </span>
         <i className="material-icons">
           check_box_outline_blank
             </i>
       </div>
       <div>
         <p>
-          Hier kommt der kommentar zu dieser bestimmten stelle hin den man später isoliert finden und kopieren kann...
-            </p>
+          {text}
+        </p>
         <i className="material-icons">
           more_vert
             </i>

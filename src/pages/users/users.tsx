@@ -14,7 +14,7 @@ const requests = allRequests.users
 
 export const Users = (props: any) => {
   const { state: { data: users }, actions: { ACTION } } = quantumReducer({ id: REDUCERS.USERS })
-  const { statuses, isLoading } = getRequestStatus({ requests })
+  // const { statuses, isLoading } = getRequestStatus({ requests })
   const [_, openModal] = quantumState({ id: MODAL, returnValue: false })
 
   const [selectedUserId, setSelectedUserId] = useState()
@@ -35,7 +35,7 @@ export const Users = (props: any) => {
     ACTION({ ...requests.post, body }).then(() => openModal({}))
   }
   const patchUser = body => ACTION({ ...requests.patch, url: requests.patch.url + body._id, body }).then(() => openModal({}))
-  const deleteUser = _id => ACTION({ ...requests.delete, url: requests.delete.url + _id })
+  // const deleteUser = _id => ACTION({ ...requests.delete, url: requests.delete.url + _id })
 
   const userModal = useCallback((initialValues?: any) => openModal({
     title: initialValues ? "Edit User" : "New User",
@@ -180,10 +180,10 @@ const tabs = [
 
 const UserInformation = ({
   email,
-  status,
-  connections,
-  access,
-  permissions,
+  // status,
+  // connections,
+  // access,
+  // permissions,
   information,
   closeInfo,
   handleEdit

@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import './tabs.scss'
 
-import { PLAYER_STATES } from '../states'
 import { quantumState } from '@piloteers/react-state'
-import { TAB_LOADING_STATUS } from '../types'
+import { PLAYER_STATES, KEY_ACTIONS } from '../../states'
+import { TAB_LOADING_STATUS } from '../../types'
 
-import { Link } from '../types'
+import { Link } from '../../types'
 
 export const Tabs = ({
   links
@@ -15,6 +15,22 @@ export const Tabs = ({
   const [tabsEnabledStatus, setTabsEnabledStatus] = quantumState({ id: PLAYER_STATES.TABS_ENABLED_STATUS, initialValue: links.reduce((res, t) => ({ ...res, [t.url]: true }), {}) })
   const [linksLoadingStatus, setLinksLoadingStatus] = quantumState({ id: PLAYER_STATES.TABS_LOADING_STATUS })
   const [selectedTab, setSelectedTab] = quantumState({ id: PLAYER_STATES.TAB_SELECTED })
+  const [keyAction, setKeyAction] = quantumState({ id: PLAYER_STATES.KEY_ACTION })
+
+  useEffect(() => {
+    if (keyAction.action === KEY_ACTIONS.VIDEO_PREV || keyAction.action === KEY_ACTIONS.VIDEO_NEXT) {
+      const currentIndex = links.findIndex(l => l.url === selectedTab)
+      const nextIndex =
+        keyAction.action === KEY_ACTIONS.VIDEO_PREV ?
+          currentIndex === 0 ?
+            links.length - 1 :
+            currentIndex - 1 :
+          currentIndex === links.length - 1 ?
+            0 :
+            currentIndex + 1
+      setSelectedTab(links[nextIndex].url)
+    }
+  }, [keyAction])
 
   return (
     <div className="player-tabs">

@@ -1,0 +1,52 @@
+.player-input {
+  position: relative;
+  &[data-input-state="IDLE"] {
+    display: grid;
+    place-items: center;
+    > .player-input__popup {
+      display: none;
+    }
+  }
+  &[data-input-state="START"], &[data-input-state="END"] {
+    border-radius: 8px;
+    > i {
+      color: var(--color-amber);
+    }
+    > .player-input__popup {
+      position: absolute;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 100px max-content;
+      grid-gap: 5px;
+      bottom: 50px;
+      right: -50px;
+      z-index: 1;
+      background-color: var(--color-grey-3);
+      padding: 5px;
+      width: max-content;
+      > textarea {
+        grid-column: 1 / 3;
+        grid-row: 1 / 2;
+        width: 250px;
+        font-size: 20px;
+        border: 1px solid var(--color-grey-2);
+        background-color: var(--color-grey-2);
+        padding: 5px;
+        &:focus {
+          background-color: var(--color-grey-1);
+        }
+      }
+      > span {
+        grid-row: 2 / 3;
+        height: 25px;
+        display: grid;
+        place-content: center;
+        cursor: pointer;
+        background-color: var(--color-grey-2);
+        &[data-time-selected="true"] {
+          background-color: var(--color-grey-1);
+        }
+      }
+    }
+  }
+}

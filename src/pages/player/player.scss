@@ -1,28 +1,30 @@
+body, #root, .app, .app__content, .app__content > div {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
 .player {
   position: relative;
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
   background-color: var(--color-grey-3);
   box-shadow: var(--shadow-inset-top-strong);
   display: grid;
   grid-template-columns: 1fr max-content;
+  grid-template-rows: 1fr max-content;
   i {
     color: var(--color-grey-2);
-  }
-  > .player__video {
-    grid-column: 1 / 2;
-    position: relative;
-  
-    #playlistToggle {
-      position: absolute;
-      top: 10px;
-      right: 5px;
-    }
   }
   .player__loading {
     display: grid;
     place-content: center;
     font-size: 24px;
     color: var(--color-grey-1);
+  }
+
+  input:focus {
+    border: none;
   }
 }

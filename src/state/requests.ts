@@ -28,6 +28,33 @@ export const requests = {
       trackId: "deleteFolder" // need to overwrite with id
     }
   },
+  tags: {
+    get: {
+      api: "CONTENT",
+      method: "GET",
+      url: "/tag/",
+      trackId: "getTags"
+    },
+    patch: {
+      api: "CONTENT",
+      method: "PATCH",
+      url: "/tag/",
+      trackId: "patchTag" // need to overwtrite with id
+    },
+    post: {
+      api: "CONTENT",
+      method: "POST",
+      url: "/tag/",
+      trackId: "postTag"
+      // need to overwrite and add body
+    },
+    delete: {
+      api: "CONTENT",
+      method: "DELETE",
+      url: "/tag/",
+      trackId: "deleteTag" // need to overwrite with id
+    }
+  },
   projects: {
     get: {
       api: "CONTENT",
