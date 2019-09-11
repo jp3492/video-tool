@@ -62,6 +62,12 @@ export const requests = {
       url: "/project",
       trackId: "getProjects"
     },
+    getMany: {
+      api: "CONTENT",
+      method: "GET_MANY",
+      url: "/projects/",
+      trackId: "getManyProjects"
+    },
     getSingle: {
       api: "CONTENT",
       method: "GET_SINGLE",

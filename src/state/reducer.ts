@@ -3,7 +3,7 @@ import { mergeArrayByKey } from '../utils'
 
 export enum REQUEST_TYPES {
   GET = "GET",                          // get list and merge with state
-  GET_ALL = "GET_ALL",                  // get list and replace state
+  GET_MANY = "GET_MANY",                  // get list and replace state
   GET_SINGLE = "GET_SINGLE",            // get item and merge with state
   POST = "POST",                        // post item and merge with state
   POST_ALL = "POST_ALL",                // post list and replace state     
@@ -14,6 +14,8 @@ export enum REQUEST_TYPES {
   DELETE_MULTIPLE = "DELETE_MULTIPLE",  // delete list and update state
 
   ERROR = "ERROR",                      // save error message to state
+  // CUSTOM ACTIONS
+  ADD_TAG_TO_PROJECT = "ADD_TAG_TO_PROJECT"
 }
 
 interface Params {
@@ -71,16 +73,18 @@ export const ACTION = (requestOptions: RequestOptions) => async dispatch => {
       }
     }
 
-    return dispatch({
+    dispatch({
       type: REQUEST_TYPES[method.toUpperCase()],
       data: response.data
     })
+    return response.data
   } catch (error) {
     dispatch({
       type: REQUEST_TYPES.ERROR,
       data: error
     })
     console.error(error)
+    return error
   }
 }
 
@@ -140,8 +144,8 @@ export const REDUCER_LIST = (state: InitialState, action: Action, options: any) 
     switch (type) {
       case REQUEST_TYPES.GET:
         return mergeArrayByKey(resourceIdName, state.data, newData)
-      case REQUEST_TYPES.GET_ALL:
-        return newData
+      case REQUEST_TYPES.GET_MANY:
+        return mergeArrayByKey(resourceIdName, state.data, newData)
       case REQUEST_TYPES.GET_SINGLE:
         return mergeArrayByKey(resourceIdName, state.data, [newData])
       case REQUEST_TYPES.POST:
@@ -164,6 +168,11 @@ export const REDUCER_LIST = (state: InitialState, action: Action, options: any) 
   })()
 
   switch (action.type) {
+    case REQUEST_TYPES.ADD_TAG_TO_PROJECT:
+      return {
+        ...state,
+        data: state.data.map(project => project._id === action.data.projectId ? { ...project, tags: [...project.tags, action.data.tagId] } : project)
+      }
     case REQUEST_TYPES.ERROR:
       return {
         ...state,

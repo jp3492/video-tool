@@ -59,33 +59,35 @@ export const Player = (props: any) => {
   const { actions: { ACTION: TAG_ACTION } } = quantumReducer({ id: REDUCERS.TAGS, connect: false })
   const [playerConfiguration, setPlayerConfiguration] = quantumState({ id: PLAYER_STATES.PLAYER_CONFIGURATION, initialValue: playerConfig })
   const [keyAction, setKeyAction] = quantumState({ id: PLAYER_STATES.KEY_ACTION, initialValue: { count: 0, action: "" } })
-  const [projectId, setProjectId] = quantumState({ id: PLAYER_STATES.PROJECT_ID, initialValue: "" })
+  const [projectIds, setProjectIds] = quantumState({ id: PLAYER_STATES.PROJECT_ID, initialValue: new URLSearchParams(window.location.search).get("ids") })
 
   useEffect(() => {
-    setProjectId(new URLSearchParams(window.location.search).get("_id"))
-  }, [window.location.search])
+    setProjectIds(new URLSearchParams(window.location.search).get("ids"))
+  }, [])
 
-  const selectedProject = useMemo(() => projects.find(p => p._id === projectId), [projects, projectId])
+  const selectedProjects = useMemo(() => projects.filter(p => projectIds.includes(p._id)), [projects, projectIds])
 
-  const links = useMemo(() => selectedProject ? selectedProject.links : [], [selectedProject])
+  const links = useMemo(() => selectedProjects.length !== 0 ? selectedProjects.reduce((res, p) => {
+    return [...res, ...p.links.filter(l => res.every(r => r.url !== l.url))]
+  }, []) : [], [selectedProjects])
 
   useEffect(() => {
-    if (selectedProject) {
+    if (selectedProjects) {
       TAG_ACTION({
         ...tagRequests.get,
-        url: tagRequests.get.url + projectId
+        url: tagRequests.get.url + projectIds
       })
     }
-  }, [selectedProject])
+  }, [selectedProjects])
 
   useEffect(() => {
-    if (!selectedProject) {
+    if (selectedProjects.length !== projectIds.length) {
       PROJECT_ACTION({
-        ...projectRequests.getSingle,
-        url: projectRequests.getSingle.url + projectId
+        ...projectRequests.getMany,
+        url: projectRequests.getMany.url + projectIds
       })
     }
-  }, [projectId])
+  }, [projectIds])
 
   const handleKeyPress = ({
     which,
@@ -113,7 +115,7 @@ export const Player = (props: any) => {
   return (
     <div className="player" id="player">
       {
-        selectedProject ?
+        selectedProjects.length !== 0 ?
           <>
             <Video links={links} />
             <Controls links={links} />

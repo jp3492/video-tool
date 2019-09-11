@@ -1,5 +1,13 @@
 .player-input {
   position: relative;
+  label {
+    grid-column: 1 / 3;
+    display: grid;
+    place-content: center;
+    padding: 20px;
+    font-size: 20px;
+    color: white;
+  }
   &[data-input-state="IDLE"] {
     display: grid;
     place-items: center;

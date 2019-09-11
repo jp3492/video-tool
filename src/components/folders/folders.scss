@@ -1,22 +1,26 @@
 .folders {
   display: grid;
   grid-row-gap: 10px;
-
+  grid-auto-rows: max-content;
   width: 200px;
 
   .folders_folder {
     display: grid;
     grid-template-columns: max-content 1fr max-content;
-    grid-gap: 10px;
+    column-gap: 10px;
     align-items: center;
-
     > i {
       width: 25px;
     }
 
     &[data-folder-selected="true"] {
+      background-color: var(--color-grey-1);
       > label {
         background-color: var(--color-grey-1);
+        color: var(--color-amber);
+      }
+      > i {
+        color: var(--color-amber);
       }
     }
 
@@ -30,6 +34,7 @@
       place-self: stretch;
       display: grid;
       align-content: center;
+      padding: 5px 0;
     }
 
     > .folders {

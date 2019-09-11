@@ -29,11 +29,16 @@ const form = createForm({
 
 export default props => {
   const [folder, setFolder] = useState(props.selectedFolder)
-  const [links, setLinks]: [any, any] = useState(props.initialValues.links || [])
+  const [links, setLinks]: [any, any] = useState(props.initialValues ? props.initialValues.links : [])
 
-  const { folders, selectedFolder, action, initialValues } = props
+  const {
+    folders,
+    selectedFolderId,
+    action,
+    initialValues
+  } = props
 
-  const handleSubmit = values => action({ ...values, folder, links }, initialValues._id)
+  const handleSubmit = values => action({ ...values, folder, links }, initialValues ? initialValues._id : undefined)
 
   const handleLinkAdded = url =>
     ReactPlayer.canPlay(url) ?
@@ -48,7 +53,7 @@ export default props => {
   return (
     <div className="project-form">
       <Folders
-        initialSelectedFolder={selectedFolder}
+        initialSelectedFolder={selectedFolderId}
         onChange={folder => setFolder(folder)}
         folders={folders} />
       <Form

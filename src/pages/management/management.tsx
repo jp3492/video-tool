@@ -38,7 +38,10 @@ export const Management = (props: any) => {
   const [_, openModal] = quantumState({ id: MODAL, returnValue: false })
   const [sideBarOpen, openSideBar] = useState(false)
   const [search, setSearch] = useState("")
+
   const [selectedProjectId, setSelectedProjectId] = useState()
+  const [selectedProjectIds, setSelectedProjectIds]: [any, any] = useState([])
+
   const [selectedFolderId, setSelectedFolderId] = useState()
   const [editingFolder, setEditingFolder] = useState()
 
@@ -83,6 +86,14 @@ export const Management = (props: any) => {
       setEditingFolder(undefined)
     } else {
       setEditingFolder(folder)
+    }
+  }
+
+  const handleAddProjectId = _id => {
+    if (selectedProjectIds.includes(_id)) {
+      setSelectedProjectIds(selectedProjectIds.filter(p => p !== _id))
+    } else {
+      setSelectedProjectIds([...selectedProjectIds, _id])
     }
   }
 
@@ -151,9 +162,44 @@ export const Management = (props: any) => {
               filteredProjects.map(p => (
                 <Project
                   {...p}
+                  inSelection={selectedProjectIds.includes(p._id)}
+                  addToSelection={handleAddProjectId}
                   selected={p._id === selectedProjectId}
                   selectProject={selectProject} />
               ))
+            }
+          </ul>
+          <div className="management__content__selection-header">
+            <h4>
+              {`${selectedProjectIds.length} Selected Project${selectedProjectIds.length === 1 ? "" : "s"}`}
+            </h4>
+            <i
+              onClick={() => setSelectedProjectIds([])}
+              className="material-icons">
+              clear
+            </i>
+            <Link to={`/player?ids=${JSON.stringify(selectedProjectIds)}`}>
+              <i className="material-icons">
+                play_arrow
+              </i>
+              <label>
+                Open in Player
+              </label>
+            </Link>
+          </div>
+          <ul className="management__content__selection">
+            {
+              selectedProjectIds.map(id => {
+                const thisProject = projects.find(p => p._id === id)
+                return (
+                  <Project
+                    {...thisProject}
+                    inSelection={selectedProjectIds.includes(thisProject._id)}
+                    addToSelection={handleAddProjectId}
+                    selected={thisProject._id === selectedProjectId}
+                    selectProject={selectProject} />
+                )
+              })
             }
           </ul>
         </div>
@@ -217,7 +263,7 @@ const Information = ({
           </label>
         </li>
         <li>
-          <Link to={`/player?_id=${_id}`}>
+          <Link to={`/player?ids=${JSON.stringify([_id])}`}>
             <label className="button">
               Open
           </label>
@@ -253,13 +299,27 @@ const Project = ({
   label,
   _id,
   selected,
-  selectProject
+  selectProject,
+  inSelection,
+  addToSelection
 }) => {
 
   return (
     <li
       data-file-selected={selected}
       onClick={() => selectProject(_id)}>
+      <i
+        onClick={e => {
+          e.stopPropagation()
+          addToSelection(_id)
+        }}
+        className="material-icons">
+        {
+          inSelection ?
+            "check_box" :
+            "check_box_outline_blank"
+        }
+      </i>
       <label>
         {label}
       </label>

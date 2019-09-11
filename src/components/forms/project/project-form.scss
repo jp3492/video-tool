@@ -3,9 +3,11 @@
   grid-template-columns: max-content max-content;
   grid-auto-rows: max-content;
   grid-gap: 10px;
+  > .folders {
+    padding-top: 25px;
+  }
   .folders {
     height: max-content;
-    padding-top: 25px;
     .folders_folder > i:nth-of-type(2) {
       display: none;
     }
