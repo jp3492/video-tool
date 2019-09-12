@@ -295,7 +295,7 @@ const Access = () => {
   )
 }
 
-const Project = ({
+export const Project = ({
   label,
   _id,
   selected,

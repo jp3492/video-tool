@@ -61,6 +61,8 @@ export const Playlist = ({ projectId }: any) => {
     }).then(res => console.log(res))
   }
 
+  const patchProject = (body, _id) => PROJECT_ACTION({ ...requests.patch, url: requests.patch.url + _id, body })
+
   return (
     <div
       data-playlist-open={playlistOpen}
@@ -77,7 +79,7 @@ export const Playlist = ({ projectId }: any) => {
             <Item
               key={ind}
               {...t}
-              selected={selectedTags.includes(t._id)}
+              selected={selectedTagIds.includes(t._id)}
               selectTag={handleSelectTags}
               handleSelectTag={handleSelectTag} />
           ))
@@ -86,8 +88,9 @@ export const Playlist = ({ projectId }: any) => {
       <PlaylistControls
         postProject={postProject}
         projects={projects}
-        projectIds={projectIds}
-        selectedTags={selectedTags} />
+        projectIds={JSON.parse(projectIds)}
+        selectedTags={selectedTags}
+        patchProject={patchProject} />
     </div>
   )
 }
@@ -96,7 +99,8 @@ const PlaylistControls = ({
   selectedTags,
   postProject,
   projects,
-  projectIds
+  projectIds,
+  patchProject
 }) => {
   const { state: { data: folders } } = quantumReducer({ id: REDUCERS.FOLDERS })
   const [_, openModal] = quantumState({ id: MODAL, returnValue: false })
@@ -120,6 +124,22 @@ const PlaylistControls = ({
     }
   }), [folders, postProject, links])
 
+  const handleAddTo = useCallback(() => openModal({
+    title: "New Project",
+    name: MODAL_TYPES.ATT_TO_PROJECT_FORM,
+    props: {
+      folders,
+      projects,
+      selectedFolderId: undefined,
+      action: patchProject,
+      initialValues: {
+        links
+      }
+    }
+  }), [folders, postProject])
+
+  console.log(folders, projects);
+
 
   return (
     <div className="player-playlist__controls">
@@ -142,7 +162,7 @@ const PlaylistControls = ({
                 Save as
               </label>
             </div>
-            <div>
+            <div onClick={handleAddTo}>
               <i className="material-icons">
                 playlist_add
               </i>

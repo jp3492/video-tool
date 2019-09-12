@@ -80,14 +80,14 @@ export const Player = (props: any) => {
     }
   }, [selectedProjects])
 
-  useEffect(() => {
-    if (selectedProjects.length !== projectIds.length) {
-      PROJECT_ACTION({
-        ...projectRequests.getMany,
-        url: projectRequests.getMany.url + projectIds
-      })
-    }
-  }, [projectIds])
+  // useEffect(() => {
+  //   if (selectedProjects.length !== projectIds.length) {
+  //     PROJECT_ACTION({
+  //       ...projectRequests.getMany,
+  //       url: projectRequests.getMany.url + projectIds
+  //     })
+  //   }
+  // }, [projectIds])
 
   const handleKeyPress = ({
     which,

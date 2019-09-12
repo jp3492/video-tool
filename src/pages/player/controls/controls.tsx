@@ -6,6 +6,7 @@ import { quantumState } from '@piloteers/react-state'
 import { Tabs } from './tabs/tabs'
 import { Input } from './input/input'
 import { PlayerConfig } from './config/config'
+import { Link } from '@reach/router'
 
 export const Controls = ({
   links
@@ -16,9 +17,11 @@ export const Controls = ({
 
   return (
     <div className="player-controls">
-      <i className="material-icons">
-        home
-      </i>
+      <Link to="/">
+        <i className="material-icons">
+          home
+        </i>
+      </Link>
       <Tabs links={links} />
       <PlayerConfig />
       <Input />

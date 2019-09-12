@@ -167,12 +167,19 @@ export const REDUCER_LIST = (state: InitialState, action: Action, options: any) 
     }
   })()
 
+  if (options.debug) {
+    console.log("Old State:", state.data)
+    console.log("Action:", action)
+    console.log("New State:", newDataState)
+  }
+
   switch (action.type) {
     case REQUEST_TYPES.ADD_TAG_TO_PROJECT:
       return {
         ...state,
         data: state.data.map(project => project._id === action.data.projectId ? { ...project, tags: [...project.tags, action.data.tagId] } : project)
       }
+    // Custom Actions above
     case REQUEST_TYPES.ERROR:
       return {
         ...state,

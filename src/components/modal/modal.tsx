@@ -5,17 +5,20 @@ import { quantumState } from "@piloteers/react-state"
 const folderForm = lazy(() => import('../forms/folder/folder-form'))
 const projectForm = lazy(() => import('../forms/project/project-form'))
 const userForm = lazy(() => import('../forms/user/user-form'))
+const addToProjectForm = lazy(() => import('../forms/project/add-to-project-form'))
 
 const CONTENT = {
   FOLDER_FORM: folderForm,
   PROJECT_FORM: projectForm,
-  USER_FORM: userForm
+  USER_FORM: userForm,
+  ATT_TO_PROJECT_FORM: addToProjectForm
 }
 
 export const MODAL_TYPES = {
   FOLDER_FORM: "FOLDER_FORM",
   PROJECT_FORM: "PROJECT_FORM",
-  USER_FORM: "USER_FORM"
+  USER_FORM: "USER_FORM",
+  ATT_TO_PROJECT_FORM: "ATT_TO_PROJECT_FORM"
 }
 
 export const MODAL = "MODAL"

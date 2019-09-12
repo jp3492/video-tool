@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, memo } from 'react'
 import './folders.scss'
 
 import { useFolders } from '../../utils'
@@ -9,7 +9,7 @@ interface Folder {
   parent: string | null
 }
 
-export const Folders = ({
+export const Folders = memo(({
   folders,
   onChange,
   initialSelectedFolder,
@@ -58,7 +58,7 @@ export const Folders = ({
       }
     </div>
   )
-}
+})
 
 const Folder = ({
   _id,

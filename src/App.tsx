@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useEffect } from 'react'
 import './app.scss'
 import { Router } from '@reach/router'
 
@@ -7,10 +7,12 @@ import { Header } from './components/header/header'
 
 import { Management, Player, Users } from './pages'
 
-import { initializeStores } from '@piloteers/react-state'
+import { initializeStores, quantumReducer } from '@piloteers/react-state'
 import { useAuthentication, AuthStatusEnum, signOut } from '@piloteers/react-authentication'
 import { stores } from './state/stores'
 
+import { REDUCERS } from './state/stores'
+import { requests } from './state/requests'
 
 initializeStores(stores)
 
@@ -40,6 +42,15 @@ const headerProps = {
 
 const App: React.FC = () => {
   const { status, AuthInterface } = useAuthentication()
+  const { actions: { ACTION: FOLDER_ACTION } } = quantumReducer({ id: REDUCERS.FOLDERS, connect: false })
+  const { actions: { ACTION: PROJECT_ACTION } } = quantumReducer({ id: REDUCERS.PROJECTS, connect: false })
+
+  useMemo(() => {
+    if (status === AuthStatusEnum.SIGNED_IN) {
+      FOLDER_ACTION(requests.folders.get)
+      PROJECT_ACTION(requests.projects.get)
+    }
+  }, [status])
 
 
   return status !== AuthStatusEnum.SIGNED_IN ?
