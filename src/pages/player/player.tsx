@@ -112,8 +112,14 @@ export const Player = (props: any) => {
     }
   }, [document])
 
+  const getClipBoard = e => {
+    e.preventDefault()
+    console.log(e)
+  }
+
   return (
-    <div className="player" id="player">
+    <div
+      onDragEnter={getClipBoard} className="player" id="player">
       {
         selectedProjects.length !== 0 ?
           <>

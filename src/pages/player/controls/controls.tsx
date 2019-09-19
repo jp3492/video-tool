@@ -30,7 +30,7 @@ export const Controls = ({
         id="playlistToggle"
         className="material-icons">
         {
-          !playlistOpen ?
+          playlistOpen ?
             "keyboard_arrow_right" :
             "keyboard_arrow_left"
         }

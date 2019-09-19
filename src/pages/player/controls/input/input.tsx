@@ -13,19 +13,22 @@ export const Input = () => {
   const { dispatch } = quantumReducer({ id: REDUCERS.PROJECTS, connect: false })
 
   const [projectIds] = quantumState({ id: PLAYER_STATES.PROJECT_ID, initialValue: new URLSearchParams(window.location.search).get("ids") })
-  const [selectedTag] = quantumState({ id: PLAYER_STATES.TAB_SELECTED })
+  const [selectedTab] = quantumState({ id: PLAYER_STATES.TAB_SELECTED })
   const [inputState, setInputState] = quantumState({ id: PLAYER_STATES.INPUT_STATE, initialValue: INPUT_STATES.IDLE })
-  const [tagContent, setTagContent] = quantumState({ id: PLAYER_STATES.TAG_CONTENT, initialValue: { text: "", start: null, end: null } })
+  const [tagContent, setTagContent] = quantumState({ id: PLAYER_STATES.TAG_CONTENT, initialValue: { text: "", start: null, end: null, _id: null } })
   const [timeSelectedState, setTimeSelectedState] = quantumState({ id: PLAYER_STATES.TAG_TIME_SELECTED, initialValue: TIME_SELECTED_STATES.NONE })
   const [keyAction, setKeyAction] = quantumState({ id: PLAYER_STATES.KEY_ACTION })
   const [time, setTime] = quantumState({ id: PLAYER_STATES.CURRENT_TIME })
+  const [editingTag, setEditingTag] = quantumState({ id: PLAYER_STATES.EDITING_TAG, initialValue: null })
 
   const postTag = () => ACTION({
     ...requests.post,
     url: requests.post.url + JSON.parse(projectIds)[0],
     body: {
-      ...tagContent,
-      url: selectedTag
+      start: tagContent.start,
+      end: tagContent.end,
+      text: tagContent.text,
+      url: selectedTab
     }
   }).then(newTag => {
     dispatch({
@@ -37,8 +40,32 @@ export const Input = () => {
     })
   })
 
+  const patchTag = tag => ACTION({
+    ...requests.patch,
+    url: requests.patch.url + tag._id,
+    body: {
+      start: tag.start,
+      end: tag.end,
+      text: tag.text,
+      url: selectedTab
+    }
+  }).then(() => setEditingTag(null))
+
   const handleInputStateChange = useCallback((next) => {
-    if (projectIds.length > 1) {
+    if (timeSelectedState === TIME_SELECTED_STATES.START && inputState === INPUT_STATES.START) {
+      if (next) {
+        setTimeSelectedState(TIME_SELECTED_STATES.END)
+      } else {
+        setTimeSelectedState(TIME_SELECTED_STATES.NONE)
+      }
+    } else if (timeSelectedState === TIME_SELECTED_STATES.END && inputState === INPUT_STATES.START) {
+      if (next) {
+        setTimeSelectedState(TIME_SELECTED_STATES.NONE)
+      } else {
+        setTimeSelectedState(TIME_SELECTED_STATES.START)
+      }
+    }
+    if (JSON.parse(projectIds).length > 1) {
       if (inputState === INPUT_STATES.IDLE) {
         setInputState(INPUT_STATES.START)
       } else {
@@ -48,9 +75,34 @@ export const Input = () => {
       if (inputState === INPUT_STATES.IDLE) {
         setTagContent({ ...tagContent, start: time })
       } else if (inputState === INPUT_STATES.START) {
-        setTagContent({ ...tagContent, end: time })
+        if (timeSelectedState === TIME_SELECTED_STATES.START) {
+          setTagContent({ ...tagContent, start: time })
+        } else {
+          if (time < tagContent.start) {
+            return alert("Ending time cant be before starting time!")
+          } else {
+            setTagContent({ ...tagContent, end: time })
+          }
+        }
       } else if (inputState === INPUT_STATES.END) {
-        postTag()
+        let content
+        if (timeSelectedState === TIME_SELECTED_STATES.END) {
+          if (time < tagContent.start) {
+            return alert("Ending time cant be before starting time!")
+          } else {
+            setTagContent({ ...tagContent, end: time })
+            content = { ...tagContent, end: time }
+          }
+        } else {
+          content = tagContent
+        }
+        if (next) {
+          if (!!tagContent._id) {
+            patchTag(content)
+          } else {
+            postTag()
+          }
+        }
       }
       setInputState(
         inputState === INPUT_STATES.IDLE ?
@@ -71,17 +123,9 @@ export const Input = () => {
     }
   }, [keyAction])
 
-  const iconType = useMemo(() =>
-    inputState === INPUT_STATES.IDLE ?
-      "create" :
-      inputState === INPUT_STATES.START ?
-        "last_page" :
-        "done"
-    , [inputState])
-
   useEffect(() => {
     if (inputState === INPUT_STATES.IDLE) {
-      setTagContent("")
+      setTagContent({ text: "", start: null, end: null, _id: null })
       setTimeSelectedState(TIME_SELECTED_STATES.NONE)
     } else {
       const inputField = document.getElementById("inputField")
@@ -91,15 +135,36 @@ export const Input = () => {
     }
   }, [inputState])
 
-  const handleTimeSelect = (isStart: boolean) =>
-    (isStart && timeSelectedState === TIME_SELECTED_STATES.START) ||
-      (!isStart && timeSelectedState === TIME_SELECTED_STATES.END) ?
-      setTimeSelectedState(TIME_SELECTED_STATES.NONE) :
-      setTimeSelectedState(
-        isStart ?
-          TIME_SELECTED_STATES.START :
-          TIME_SELECTED_STATES.END
-      )
+  useEffect(() => {
+    if (!!editingTag) {
+      setInputState(INPUT_STATES.END)
+    } else {
+      setInputState(INPUT_STATES.IDLE)
+    }
+  }, [editingTag])
+
+  const handleTimeSelect = (isStart: boolean) => {
+    if ((isStart && timeSelectedState === TIME_SELECTED_STATES.START) ||
+      (!isStart && timeSelectedState === TIME_SELECTED_STATES.END)) {
+      setTimeSelectedState(TIME_SELECTED_STATES.NONE)
+    } else {
+      if (isStart) {
+        setInputState(INPUT_STATES.START)
+        setTimeSelectedState(TIME_SELECTED_STATES.START)
+      } else {
+        setInputState(INPUT_STATES.END)
+        setTimeSelectedState(TIME_SELECTED_STATES.END)
+      }
+    }
+  }
+
+  const iconType = useMemo(() =>
+    inputState === INPUT_STATES.IDLE ?
+      "create" :
+      inputState === INPUT_STATES.START ?
+        "last_page" :
+        "done"
+    , [inputState])
 
   return (
     <div
@@ -122,14 +187,18 @@ export const Input = () => {
                 onClick={() => handleTimeSelect(true)}
                 data-time-selected={timeSelectedState === TIME_SELECTED_STATES.START || inputState === INPUT_STATES.START}>
                 {
-                  tagContent.start
+                  timeSelectedState === TIME_SELECTED_STATES.START ?
+                    time :
+                    tagContent.start
                 }
               </span>
               <span
                 onClick={() => handleTimeSelect(false)}
                 data-time-selected={timeSelectedState === TIME_SELECTED_STATES.END || inputState === INPUT_STATES.END}>
                 {
-                  tagContent.end
+                  timeSelectedState === TIME_SELECTED_STATES.END ?
+                    time :
+                    tagContent.end
                 }
               </span>
             </> :

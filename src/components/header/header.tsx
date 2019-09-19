@@ -53,10 +53,18 @@ export const Header = ({
 
   return (
     <header id="header">
-      <img
+      {/* <img
         src={logo}
         height="50px"
-        width="auto" />
+        width="auto" /> */}
+      <div className="header-logo">
+        <h1>
+          Viden
+        </h1>
+        <span>
+          Manage videos online. The right way
+        </span>
+      </div>
       <i
         data-menu-icon-open={open}
         onClick={() => setOpen(!open)}

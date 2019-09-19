@@ -33,7 +33,7 @@ export const Management = (props: any) => {
   const { state: { data: folders }, actions: { ACTION: FOLDER_ACTION } } = quantumReducer({ id: REDUCERS.FOLDERS })
   const { state: { data: projects }, actions: { ACTION: PROJECT_ACTION } } = quantumReducer({ id: REDUCERS.PROJECTS })
 
-  const { statuses, isLoading } = getRequestStatus({ requests: { ...folderRequests, ...projectRequests } })
+  const { statuses, isLoading } = getRequestStatus({ requests: {} })
 
   const [_, openModal] = quantumState({ id: MODAL, returnValue: false })
   const [sideBarOpen, openSideBar] = useState(false)
@@ -97,6 +97,10 @@ export const Management = (props: any) => {
     }
   }
 
+  const handleDragEnter = dragEvent => {
+
+  }
+
   const selectedFolder = useMemo(() => folders.find(f => f._id === selectedFolderId), [selectedFolderId, folders])
 
   const selectProject = useCallback(_id => setSelectedProjectId(_id), [])
@@ -110,7 +114,7 @@ export const Management = (props: any) => {
 
   return (
     <div
-      onDragOver={e => e.preventDefault()}
+      onDragOver={getClipBoard}
       onDrop={getClipBoard}
       className="management">
       <div
@@ -173,19 +177,24 @@ export const Management = (props: any) => {
             <h4>
               {`${selectedProjectIds.length} Selected Project${selectedProjectIds.length === 1 ? "" : "s"}`}
             </h4>
-            <i
-              onClick={() => setSelectedProjectIds([])}
-              className="material-icons">
-              clear
-            </i>
-            <Link to={`/player?ids=${JSON.stringify(selectedProjectIds)}`}>
-              <i className="material-icons">
-                play_arrow
+            {
+              selectedProjectIds.length !== 0 &&
+              <>
+                <i
+                  onClick={() => setSelectedProjectIds([])}
+                  className="material-icons">
+                  clear
               </i>
-              <label>
-                Open in Player
-              </label>
-            </Link>
+                <Link to={`/player?ids=${JSON.stringify(selectedProjectIds)}`}>
+                  <i className="material-icons">
+                    play_arrow
+                  </i>
+                  <label>
+                    Open in Player
+                  </label>
+                </Link>
+              </>
+            }
           </div>
           <ul className="management__content__selection">
             {

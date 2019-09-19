@@ -22,6 +22,10 @@ export default ({
     }
   }
 
+  const handleSubmit = () => {
+    action(selectedProjectIds)
+  }
+
   return (
     <div className="add-to-project-form">
       <Folders
@@ -34,7 +38,7 @@ export default ({
         {
           filteredProjects.length === 0 &&
           <li>
-            <b>No Projects in Folder</b>
+            No Projects in Folder
           </li>
         }
         {
@@ -69,7 +73,7 @@ export default ({
         }
       </ul>
       <a
-        onClick={() => action}
+        onClick={handleSubmit}
         className="button">
         Submit
       </a>
