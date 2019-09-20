@@ -54,7 +54,7 @@ export const Management = (props: any) => {
   const postProject = body => PROJECT_ACTION({ ...projectRequests.post, body }).then(() => openModal({}))
 
   const patchFolder = (_id, body) => FOLDER_ACTION({ ...folderRequests.patch, url: folderRequests.patch.url + _id, body }).then(() => openModal({}))
-  const patchProject = (body, _id) => PROJECT_ACTION({ ...projectRequests.patch, url: projectRequests.patch.url + _id, body }).then(() => openModal({}))
+  const patchProject = (_id, body) => PROJECT_ACTION({ ...projectRequests.patch, url: projectRequests.patch.url + _id, body }).then(() => openModal({}))
 
   const deleteFolder = _id => FOLDER_ACTION({ ...folderRequests.delete, url: folderRequests.patch.url + _id }).then(() => openModal({}))
   const deleteProject = _id => FOLDER_ACTION({ ...projectRequests.delete, url: projectRequests.patch.url + _id }).then(() => openModal({}))
@@ -76,7 +76,7 @@ export const Management = (props: any) => {
     props: {
       folders,
       selectedFolderId,
-      action: initialValues ? patchProject : postProject,
+      action: initialValues ? (body, _id) => patchProject(_id, { ...initialValues, ...body }) : postProject,
       initialValues
     }
   }), [folders, selectedFolderId])

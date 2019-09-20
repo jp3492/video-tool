@@ -1,4 +1,4 @@
-import React, { useState, useCallback, memo, useEffect, useRef } from 'react'
+import React, { useState, useCallback, memo, useEffect, useRef, useMemo } from 'react'
 import './video.scss'
 
 import { Link } from '../types'
@@ -6,6 +6,7 @@ import { quantumState } from '@piloteers/react-state'
 import { PLAYER_STATES, KEY_ACTIONS } from '../states'
 import { TAB_LOADING_STATUS } from '../types'
 import ReactPlayer from 'react-player'
+import { useTime, setActiveTab } from '../useTime'
 
 const playerVars = {
   youtube: {
@@ -38,6 +39,10 @@ export const Video = memo(({
 
   const playerRef = useRef({})
 
+  useMemo(() => {
+    setActiveTab(links[0].url)
+  }, [])
+
   useEffect(() => {
     setPlayers(playerRef.current)
   }, [playerRef.current])
@@ -47,6 +52,10 @@ export const Video = memo(({
   useEffect(() => {
     if (keyAction.action === KEY_ACTIONS.PLAY) {
       setPlaying(!playing)
+    } else if (keyAction.action === KEY_ACTIONS.FAST_FORWARD) {
+      playerRef.current[selectedTab].seekTo(playerRef.current[selectedTab].getCurrentTime() + 1, "seconds")
+    } else if (keyAction.action === KEY_ACTIONS.REWIND) {
+      playerRef.current[selectedTab].seekTo(playerRef.current[selectedTab].getCurrentTime() - 1, "seconds")
     }
   }, [keyAction])
 
@@ -92,7 +101,8 @@ const Player = memo(({
   playing: boolean,
   setPlaying: Function
 }) => {
-  const [time, setTime] = quantumState({ id: PLAYER_STATES.CURRENT_TIME, initialValue: 0, returnValue: false })
+  // const [time, setTime] = quantumState({ id: PLAYER_STATES.CURRENT_TIME, initialValue: 0, returnValue: false })
+  const { setTime } = useTime({ returnValue: false })
 
   return (
     <ReactPlayer

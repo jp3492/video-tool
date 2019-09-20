@@ -5,6 +5,7 @@ import { quantumState, quantumReducer } from '@piloteers/react-state'
 import { REDUCERS } from '../../../../state/stores'
 import { requests as allRequests } from '../../../../state/requests'
 import { REQUEST_TYPES } from '../../../../state/reducer'
+import { useTime } from '../../useTime'
 
 const requests = allRequests.tags
 
@@ -18,8 +19,9 @@ export const Input = () => {
   const [tagContent, setTagContent] = quantumState({ id: PLAYER_STATES.TAG_CONTENT, initialValue: { text: "", start: null, end: null, _id: null } })
   const [timeSelectedState, setTimeSelectedState] = quantumState({ id: PLAYER_STATES.TAG_TIME_SELECTED, initialValue: TIME_SELECTED_STATES.NONE })
   const [keyAction, setKeyAction] = quantumState({ id: PLAYER_STATES.KEY_ACTION })
-  const [time, setTime] = quantumState({ id: PLAYER_STATES.CURRENT_TIME })
   const [editingTag, setEditingTag] = quantumState({ id: PLAYER_STATES.EDITING_TAG, initialValue: null })
+
+  const { state: time } = useTime({})
 
   const postTag = () => ACTION({
     ...requests.post,

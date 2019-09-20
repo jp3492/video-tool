@@ -6,6 +6,7 @@ import { PLAYER_STATES, KEY_ACTIONS } from '../../states'
 import { TAB_LOADING_STATUS } from '../../types'
 
 import { Link } from '../../types'
+import { setActiveTab } from '../../useTime'
 
 export const Tabs = ({
   links
@@ -32,6 +33,11 @@ export const Tabs = ({
     }
   }, [keyAction])
 
+  const handleSelectTab = url => {
+    setActiveTab(url)
+    setSelectedTab(url)
+  }
+
   return (
     <div className="player-tabs">
       <ul>
@@ -54,7 +60,7 @@ export const Tabs = ({
                   }
                 </i>
                 <label
-                  onClick={() => setSelectedTab(url)}>
+                  onClick={() => handleSelectTab(url)}>
                   {
                     linksLoadingStatus[url] === TAB_LOADING_STATUS.LOADING ?
                       "Loading.." :
