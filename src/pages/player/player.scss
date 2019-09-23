@@ -26,4 +26,12 @@ body, #root, .app, .app__content, .app__content > div {
   input:focus {
     border: none;
   }
+  > .player__drop-cover {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+    background-color: aqua;
+    opacity: 0.5;
+  }
 }

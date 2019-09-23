@@ -101,7 +101,6 @@ const Player = memo(({
   playing: boolean,
   setPlaying: Function
 }) => {
-  // const [time, setTime] = quantumState({ id: PLAYER_STATES.CURRENT_TIME, initialValue: 0, returnValue: false })
   const { setTime } = useTime({ returnValue: false })
 
   return (
@@ -114,6 +113,7 @@ const Player = memo(({
       className={selected ? "player-selected" : ""}
       width="100%"
       height="100%"
+      onEnded={() => console.log(url)}
       config={playerVars}
       url={url}
       ref={player => addPlayer(url, player)}

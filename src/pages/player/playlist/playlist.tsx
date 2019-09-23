@@ -12,6 +12,27 @@ import { Tag } from './playlist-tag'
 
 const requests = allRequests.projects
 
+enum SettingsTarget {
+  VIDEO = "VIDEO",
+  TAG = "TAG",
+  LIST = "LIST",
+  SELECTED = "SELECTED",
+  FILTERED = "FILTERED",
+  SELECTED_FILTERED = "SELECTED_FILTERED"
+}
+enum SettingsType {
+  PLAY = "PLAY",
+  LOOP = "LOOP",
+  PLAY_TO_END = "PLAY_TO_END",
+  RANDOM = "RANDOM"
+}
+interface iSettings {
+  target: SettingsTarget,
+  type: SettingsType
+}
+const initialSettings: iSettings = { target: SettingsTarget.VIDEO, type: SettingsType.PLAY }
+const intialFilter = { time: { active: false, asc: false, rank: 0 }, video: { active: false, asc: false, rank: 0 }, selected: { active: false, asc: false } }
+
 export const Playlist = (props: any) => {
   const { state: { data: tags } } = quantumReducer({ id: REDUCERS.TAGS })
   const { state: { data: projects }, actions: { ACTION: PROJECT_ACTION } } = quantumReducer({ id: REDUCERS.PROJECTS })
@@ -23,25 +44,12 @@ export const Playlist = (props: any) => {
   const [selectedTagIds, setSelectedTagIds] = quantumState({ id: PLAYER_STATES.TAGS_SELECTED, initialValue: [] })
   const [playing, setPlaying] = quantumState({ id: PLAYER_STATES.PLAYING })
   const [tabsEnabledStatus] = quantumState({ id: PLAYER_STATES.TABS_ENABLED_STATUS })
-  const [settings, setSettings] = quantumState({ id: PLAYER_STATES.PLAYLIST_SETTINGS, initialValue: { loop: false, selectionOnly: false, tagForTag: false, stopAfterTag: false } })
+
+  const [settings, setSettings]: [iSettings, any] = quantumState({ id: PLAYER_STATES.PLAYLIST_SETTINGS, initialValue: initialSettings })
+  const [filter, setFilter]: [any, any] = useState(intialFilter)
+
   const [openSubHeader, setOpenSubHeader] = useState("")
   const [search, setSearch] = useState("")
-  const [filter, setFilter]: [any, any] = useState({
-    time: {
-      active: false,
-      asc: false,
-      rank: 0
-    },
-    video: {
-      active: false,
-      asc: false,
-      rank: 0
-    },
-    selected: {
-      active: false,
-      asc: false
-    }
-  })
 
   const handleSetFilter = useCallback(type => {
     const otherType = Object.keys(filter).filter(k => k !== type && k !== "selected")[0]
@@ -123,7 +131,7 @@ export const Playlist = (props: any) => {
   })
 
   const handleChangeSubheader = useCallback(type => setOpenSubHeader(openSubHeader === type ? "" : type), [openSubHeader])
-  const handleSetSettings = useCallback(type => setSettings({ ...settings, [type]: !settings[type] }), [settings])
+  const handleSetSettings = useCallback((key, value) => setSettings({ ...settings, [key]: value }), [settings])
 
   const activeProjects = useMemo(() => projects.filter(({ _id }) => JSON.parse(projectIds).includes(_id)), [projectIds, projects])
   const linkNames = useMemo(() => activeProjects.reduce((res, p) => p.links.reduce((re, l) => ({ ...re, [l.url]: l.label }), res), {}), [activeProjects])
@@ -144,16 +152,18 @@ export const Playlist = (props: any) => {
           onClick={() => handleChangeSubheader("settings")}
           data-icon-active={openSubHeader === "settings"}
           className="material-icons">
-          settings_applications
+          playlist_play
         </i>
         {
           openSubHeader === "filter" ?
             <Filter
               filter={filter}
               handleSetFilter={handleSetFilter} /> :
-            <Settings
-              settings={settings}
-              handleSetSettings={handleSetSettings} />
+            openSubHeader === "settings" ?
+              <Settings
+                settings={settings}
+                handleSetSettings={handleSetSettings} /> :
+              null
         }
       </div>
       <ul className="player-playlist__list">
@@ -180,6 +190,28 @@ export const Playlist = (props: any) => {
   )
 }
 
+const targetIcon = {
+  [SettingsTarget.VIDEO]: "subscriptions",
+  [SettingsTarget.TAG]: "calendar_view_day",
+  [SettingsTarget.LIST]: "dehaze",
+  [SettingsTarget.SELECTED]: "check_box",
+  [SettingsTarget.FILTERED]: "filter_list",
+  [SettingsTarget.SELECTED_FILTERED]: "toc"
+}
+const typeIcon = {
+  [SettingsType.PLAY]: "play_arrow",
+  [SettingsType.LOOP]: "repeat",
+  [SettingsType.PLAY_TO_END]: "last_page",
+  [SettingsType.RANDOM]: "shuffle"
+}
+
+const getNextInEnum = (e, val) => {
+  const arr = Object.keys(e)
+  const activeIndex = arr.indexOf(val)
+  const nextIndex = activeIndex === arr.length - 1 ? 0 : activeIndex + 1
+  return arr[nextIndex]
+}
+
 const Settings = ({
   settings,
   handleSetSettings
@@ -187,26 +219,56 @@ const Settings = ({
 
   return (
     <div className="player-playlist__header-settings">
-      <i
-        data-icons-active={settings.loop}
+      <div>
+        {
+          Object.keys(SettingsTarget).map((t, i) => (
+            <i
+              key={i}
+              data-icon-active={settings.target === SettingsTarget[t]}
+              onClick={() => handleSetSettings("target", SettingsTarget[t])}
+              className="material-icons">
+              {targetIcon[t]}
+            </i>
+          ))
+        }
+      </div>
+      <div>
+        {
+          Object.keys(SettingsType).map((t, i) => (
+            <i
+              key={i}
+              data-icon-active={settings.type === SettingsType[t]}
+              onClick={() => handleSetSettings("type", SettingsType[t])}
+              className="material-icons">
+              {typeIcon[t]}
+            </i>
+          ))
+        }
+      </div>
+      {/* <i
+        onClick={() => handleSetSettings("loop")}
+        data-icon-active={settings.loop}
         className="material-icons">
         repeat
       </i>
       <i
-        data-icons-active={settings.tagForTag}
+        onClick={() => handleSetSettings("tagForTag")}
+        data-icon-active={settings.tagForTag}
         className="material-icons">
         playlist_play
       </i>
       <i
-        data-icons-active={settings.selectionOnly}
-        className="material-icons">
-        check_box
-      </i>
-      <i
-        data-icons-active={settings.stopAfterTag}
+        onClick={() => handleSetSettings("stopAfterTag")}
+        data-icon-active={settings.stopAfterTag}
         className="material-icons">
         last_page
       </i>
+      <i
+        onClick={() => handleSetSettings("selectionOnly")}
+        data-icon-active={settings.selectionOnly}
+        className="material-icons">
+        check_box
+      </i> */}
     </div>
   )
 }

@@ -1,5 +1,7 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import './player.scss'
+
+import ReactPlayer from 'react-player'
 
 import { Controls } from './controls/controls'
 import { Playlist } from './playlist/playlist'
@@ -11,6 +13,7 @@ import { REDUCERS } from '../../state/stores'
 import { requests as allRequests } from '../../state/requests'
 
 const tagRequests = allRequests.tags
+const projectRequests = allRequests.projects
 
 const playerConfig = {
   [KEY_ACTIONS.PLAY]: {
@@ -61,15 +64,23 @@ const playerConfig = {
 }
 
 export const Player = (props: any) => {
-  const { state: { data: projects } } = quantumReducer({ id: REDUCERS.PROJECTS })
+  const { state: { data: projects }, actions: { ACTION } } = quantumReducer({ id: REDUCERS.PROJECTS })
   const { actions: { ACTION: TAG_ACTION } } = quantumReducer({ id: REDUCERS.TAGS, connect: false })
   const [playerConfiguration] = quantumState({ id: PLAYER_STATES.PLAYER_CONFIGURATION, initialValue: playerConfig })
   const [keyAction, setKeyAction] = quantumState({ id: PLAYER_STATES.KEY_ACTION, initialValue: { count: 0, action: "" } })
   const [projectIds, setProjectIds] = quantumState({ id: PLAYER_STATES.PROJECT_ID, initialValue: new URLSearchParams(window.location.search).get("ids") })
 
+  const [showDropCover, setShowDropCover] = useState(false)
+
   useEffect(() => {
     setProjectIds(new URLSearchParams(window.location.search).get("ids"))
   }, [])
+
+  const patchProject = (values) => ACTION({
+    ...projectRequests.patch,
+    url: projectRequests.patch.url + values._id,
+    body: values
+  }).then(res => console.log(res))
 
   const selectedProjects = useMemo(() => projects.filter(p => projectIds.includes(p._id)), [projects, projectIds])
 
@@ -111,14 +122,40 @@ export const Player = (props: any) => {
     }
   }, [document])
 
-  const getClipBoard = e => {
+  const handleUrlDrop = (e, fromCover = false) => {
+    console.log(e.type);
+    e.stopPropagation()
     e.preventDefault()
-    console.log(e)
+    switch (e.type) {
+      case "dragover":
+      case "dragenter":
+        e.returnValue = false;
+        if (!showDropCover) {
+          setShowDropCover(true)
+        }
+        break;
+      case "drop":
+        const link = e.dataTransfer.getData("URL")
+        if (ReactPlayer.canPlay(link)) {
+
+        } else {
+          alert("Provided link doesnt contain a compatible video source")
+        }
+        // setShowDropCover(false)
+        e.returnValue = false;
+        break
+      case "dragleave":
+        e.returnValue = false;
+      // setShowDropCover(false)
+    }
   }
 
   return (
     <div
-      onDragEnter={getClipBoard} className="player" id="player">
+      onDragEnter={handleUrlDrop}
+      // onDragOver={handleUrlDrop}
+      // onDrop={handleUrlDrop}
+      className="player" id="player">
       {
         selectedProjects.length !== 0 ?
           <>
@@ -130,7 +167,15 @@ export const Player = (props: any) => {
             Loading...
           </div>
       }
-
+      {
+        showDropCover &&
+        <div
+          onDragEnter={handleUrlDrop}
+          onDragOver={handleUrlDrop}
+          onDragLeave={handleUrlDrop}
+          onDrop={handleUrlDrop}
+          className="player__drop-cover"></div>
+      }
     </div>
   )
 }
