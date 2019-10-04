@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback } from 'react'
 import './playlist.scss'
 
 import { PLAYER_STATES } from '../states'
-import { quantumState, quantumReducer } from '@piloteers/react-state'
+import { quantumState, quantumReducer, setQuantumValue } from '@piloteers/react-state'
 import { REDUCERS } from '../../../state/stores'
 
 import { requests as allRequests } from '../../../state/requests'
@@ -110,7 +110,7 @@ export const Playlist = (props: any) => {
       ...values,
       tags: tagsToSave
     }
-  }).then(res => console.log(res))
+  }).then(res => setQuantumValue("MODAL", {}))
 
   const patchProject = (values) => PROJECT_ACTION({
     ...requests.patch,

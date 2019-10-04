@@ -1,11 +1,8 @@
-body, #root, .app, .app__content, .app__content > div {
-  position: absolute;
-  width: 100%;
-}
+
 
 .player {
   position: relative;
-  height: 100vh;
+  height: 100vh !important;
   width: 100%;
   overflow: hidden;
   background-color: var(--color-grey-3);

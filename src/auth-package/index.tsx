@@ -1,0 +1,5 @@
+export { useAuthentication } from './components/use_authentication'
+export { configure, signOut, signUp } from './methods'
+export { setApis, request, GetRequestStatus as getRequestStatus } from './services/communication'
+export { UserAttributes as UserAttributesEnum, IdentityAttributes as IdentityAttributesEnum } from './models/interfaces'
+export { RequestStatusEnum, StatusEnum as AuthStatusEnum, ViewEnum as InterfaceViewEnum } from './models/enums'

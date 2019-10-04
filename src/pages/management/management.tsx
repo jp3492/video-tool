@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react'
 import './management.scss'
 
-import { getRequestStatus } from '@piloteers/react-authentication'
+import { getRequestStatus } from '../../auth-package'
 import { quantumState, quantumReducer } from '@piloteers/react-state'
 import { REDUCERS } from '../../state/stores'
 
@@ -12,6 +12,7 @@ import { Folders } from '../../components/folders/folders'
 import { Tabs } from '../../components/tabs/tabs'
 
 import { requests } from '../../state/requests'
+import ReactPlayer from 'react-player'
 
 const {
   folders: folderRequests,
@@ -45,19 +46,14 @@ export const Management = (props: any) => {
   const [selectedFolderId, setSelectedFolderId] = useState()
   const [editingFolder, setEditingFolder] = useState()
 
-  useEffect(() => {
-    FOLDER_ACTION(folderRequests.get)
-    PROJECT_ACTION(projectRequests.get)
-  }, [])
-
   const postFolder = body => FOLDER_ACTION({ ...folderRequests.post, body }).then(() => openModal({}))
   const postProject = body => PROJECT_ACTION({ ...projectRequests.post, body }).then(() => openModal({}))
 
   const patchFolder = (_id, body) => FOLDER_ACTION({ ...folderRequests.patch, url: folderRequests.patch.url + _id, body }).then(() => openModal({}))
   const patchProject = (_id, body) => PROJECT_ACTION({ ...projectRequests.patch, url: projectRequests.patch.url + _id, body }).then(() => openModal({}))
 
-  const deleteFolder = _id => FOLDER_ACTION({ ...folderRequests.delete, url: folderRequests.patch.url + _id }).then(() => openModal({}))
-  const deleteProject = _id => FOLDER_ACTION({ ...projectRequests.delete, url: projectRequests.patch.url + _id }).then(() => openModal({}))
+  // const deleteFolder = _id => FOLDER_ACTION({ ...folderRequests.delete, url: folderRequests.patch.url + _id }).then(() => openModal({}))
+  // const deleteProject = _id => FOLDER_ACTION({ ...projectRequests.delete, url: projectRequests.patch.url + _id }).then(() => openModal({}))
 
   const folderModal = useCallback((initialValues?: any) => openModal({
     title: initialValues ? "Edit Folder" : "New Folder",
@@ -76,7 +72,7 @@ export const Management = (props: any) => {
     props: {
       folders,
       selectedFolderId,
-      action: initialValues ? (body, _id) => patchProject(_id, { ...initialValues, ...body }) : postProject,
+      action: initialValues && initialValues.hasOwnProperty("_id") ? (body, _id) => patchProject(_id, { ...initialValues, ...body }) : postProject,
       initialValues
     }
   }), [folders, selectedFolderId])
@@ -97,26 +93,46 @@ export const Management = (props: any) => {
     }
   }
 
-  const handleDragEnter = dragEvent => {
-
-  }
-
   const selectedFolder = useMemo(() => folders.find(f => f._id === selectedFolderId), [selectedFolderId, folders])
 
   const selectProject = useCallback(_id => setSelectedProjectId(_id), [])
   const selectedProject = useMemo(() => projects.find(p => p._id === selectedProjectId) || {}, [selectedProjectId, projects])
   const filteredProjects = useMemo(() => projects.filter(p => p.folder === selectedFolderId), [selectedFolderId, projects])
 
-  const getClipBoard = e => {
+  const handleUrlDrop = useCallback((e, target) => {
+    e.stopPropagation()
     e.preventDefault()
-    console.log(e.dataTransfer.getData("text"))
-  }
+    switch (e.type) {
+      case "dragover":
+      case "dragenter":
+        e.returnValue = false;
+        break;
+      case "drop":
+        const link = e.dataTransfer.getData("URL")
+        if (ReactPlayer.canPlay(link)) {
+          if (target.type === "project") {
+            const thisProject = projects.find(p => p._id === target.id)
+            if (thisProject.links.every(l => l.url !== link)) {
+              const label = prompt("Please assign a label for inserted link")
+              patchProject(target.id, { ...thisProject, links: [...thisProject.links, { url: link, label }] })
+            } else {
+              const thisLink = thisProject.links.find(l => l.url === link)
+              alert(`Link already exists: ${thisLink.label}`)
+            }
+          } else {
+            projectModal({ links: [{ url: link }] })
+          }
+        } else {
+          alert("Provided link doesnt contain a compatible video source")
+        }
+        // setShowDropCover(false)
+        e.returnValue = false;
+        break
+    }
+  }, [projects, projectModal])
 
   return (
-    <div
-      onDragOver={getClipBoard}
-      onDrop={getClipBoard}
-      className="management">
+    <div className="management">
       <div
         data-sidebar-open={sideBarOpen}
         className="management__sidebar">
@@ -161,11 +177,19 @@ export const Management = (props: any) => {
               </label>
             </a>
           </div>
-          <ul className="management__content__content">
+          <ul
+            onDragEnter={e => handleUrlDrop(e, { type: "folder", id: selectedFolderId })}
+            onDragOver={e => handleUrlDrop(e, { type: "folder", id: selectedFolderId })}
+            onDrop={e => handleUrlDrop(e, { type: "folder", id: selectedFolderId })}
+            className="management__content__content">
             {
-              filteredProjects.map(p => (
+              filteredProjects.map((p, i) => (
                 <Project
+                  key={i}
                   {...p}
+                  onDragEnter={e => handleUrlDrop(e, { type: "project", id: p._id })}
+                  onDragOver={e => handleUrlDrop(e, { type: "project", id: p._id })}
+                  onDrop={e => handleUrlDrop(e, { type: "project", id: p._id })}
                   inSelection={selectedProjectIds.includes(p._id)}
                   addToSelection={handleAddProjectId}
                   selected={p._id === selectedProjectId}
@@ -173,44 +197,68 @@ export const Management = (props: any) => {
               ))
             }
           </ul>
-          <div className="management__content__selection-header">
-            <h4>
-              {`${selectedProjectIds.length} Selected Project${selectedProjectIds.length === 1 ? "" : "s"}`}
-            </h4>
-            {
-              selectedProjectIds.length !== 0 &&
-              <>
-                <i
-                  onClick={() => setSelectedProjectIds([])}
-                  className="material-icons">
-                  clear
-              </i>
-                <Link to={`/player?ids=${JSON.stringify(selectedProjectIds)}`}>
-                  <i className="material-icons">
-                    play_arrow
+          <div>
+
+            <div className="management__content__selection-header">
+              <h4>
+                {`${selectedProjectIds.length} Selected Project${selectedProjectIds.length === 1 ? "" : "s"}`}
+              </h4>
+              {
+                selectedProjectIds.length !== 0 &&
+                <>
+                  <i
+                    onClick={() => setSelectedProjectIds([])}
+                    className="material-icons">
+                    clear
                   </i>
-                  <label>
-                    Open in Player
-                  </label>
-                </Link>
-              </>
-            }
+                  <div>
+                    <i className="material-icons">
+                      save
+                    </i>
+                    <label>
+                      Save as
+                    </label>
+                  </div>
+                  <Link to={`/player?ids=${JSON.stringify(selectedProjectIds)}`}>
+                    <i className="material-icons">
+                      play_arrow
+                    </i>
+                    <label>
+                      Open in Player
+                    </label>
+                  </Link>
+                  <div>
+                    <i className="material-icons">
+                      delete
+                    </i>
+                    <label>
+                      Delete All
+                    </label>
+                  </div>
+                </>
+              }
+            </div>
+            <ul
+              data-no-items={selectedProjectIds.length === 0}
+              className="management__content__selection">
+              {
+                selectedProjectIds.map(id => {
+                  const thisProject = projects.find(p => p._id === id)
+                  return (
+                    <Project
+                      {...thisProject}
+                      onDragEnter={e => handleUrlDrop(e, { type: "project", id: thisProject._id })}
+                      onDragOver={e => handleUrlDrop(e, { type: "project", id: thisProject._id })}
+                      onDrop={e => handleUrlDrop(e, { type: "project", id: thisProject._id })}
+                      inSelection={selectedProjectIds.includes(thisProject._id)}
+                      addToSelection={handleAddProjectId}
+                      selected={thisProject._id === selectedProjectId}
+                      selectProject={selectProject} />
+                  )
+                })
+              }
+            </ul>
           </div>
-          <ul className="management__content__selection">
-            {
-              selectedProjectIds.map(id => {
-                const thisProject = projects.find(p => p._id === id)
-                return (
-                  <Project
-                    {...thisProject}
-                    inSelection={selectedProjectIds.includes(thisProject._id)}
-                    addToSelection={handleAddProjectId}
-                    selected={thisProject._id === selectedProjectId}
-                    selectProject={selectProject} />
-                )
-              })
-            }
-          </ul>
         </div>
         {
           !!editingFolder ?
@@ -310,11 +358,15 @@ export const Project = ({
   selected,
   selectProject,
   inSelection,
-  addToSelection
+  addToSelection,
+  updatedAt,
+  createdAt,
+  ...drageEvents
 }) => {
 
   return (
     <li
+      {...drageEvents}
       data-file-selected={selected}
       onClick={() => selectProject(_id)}>
       <i

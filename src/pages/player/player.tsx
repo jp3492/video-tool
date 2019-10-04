@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react'
 import './player.scss'
 
 import ReactPlayer from 'react-player'
@@ -72,21 +72,24 @@ export const Player = (props: any) => {
 
   const [showDropCover, setShowDropCover] = useState(false)
 
+
   useEffect(() => {
     setProjectIds(new URLSearchParams(window.location.search).get("ids"))
   }, [])
 
-  const patchProject = (values) => ACTION({
-    ...projectRequests.patch,
-    url: projectRequests.patch.url + values._id,
-    body: values
-  }).then(res => console.log(res))
+  // const patchProject = (values) => ACTION({
+  //   ...projectRequests.patch,
+  //   url: projectRequests.patch.url + values._id,
+  //   body: values
+  // }).then(res => console.log(res))
 
   const selectedProjects = useMemo(() => projects.filter(p => projectIds.includes(p._id)), [projects, projectIds])
+  console.log(selectedProjects);
 
   const links = useMemo(() => selectedProjects.length !== 0 ? selectedProjects.reduce((res, p) => {
     return [...res, ...p.links.filter(l => res.every(r => r.url !== l.url))]
   }, []) : [], [selectedProjects])
+  console.log(links);
 
   useEffect(() => {
     if (selectedProjects) {
@@ -97,13 +100,11 @@ export const Player = (props: any) => {
     }
   }, [selectedProjects])
 
-  const handleKeyPress = ({
-    which,
-    ctrlKey,
-    shiftKey
-  }, up) => {
+  const handleKeyPress = useCallback(({ which, ctrlKey, shiftKey, type }) => {
 
-    const action = Object.keys(playerConfiguration).find(a => playerConfiguration[a].ctrl === ctrlKey && playerConfiguration[a].key === which && playerConfiguration[a].shift === shiftKey)
+    const up = type === "keyup"
+    const action: any = Object.keys(playerConfiguration).find(a => playerConfiguration[a].ctrl === ctrlKey && playerConfiguration[a].key === which && playerConfiguration[a].shift === shiftKey)
+
     if (action === KEY_ACTIONS.TAG_STATE_NEXT) {
       if (up) {
         setKeyAction({ count: keyAction.count + 1, action })
@@ -111,14 +112,15 @@ export const Player = (props: any) => {
     } else if (!up) {
       setKeyAction({ count: keyAction.count + 1, action })
     }
-  }
+
+  }, [keyAction])
 
   useEffect(() => {
-    document.addEventListener("keyup", e => handleKeyPress(e, true))
-    document.addEventListener("keydown", e => handleKeyPress(e, false))
+    document.addEventListener("keyup", handleKeyPress)
+    document.addEventListener("keydown", handleKeyPress)
     return () => {
-      document.removeEventListener("keyup", e => handleKeyPress(e, true))
-      document.removeEventListener("keydown", e => handleKeyPress(e, false))
+      document.removeEventListener("keyup", handleKeyPress)
+      document.removeEventListener("keydown", handleKeyPress)
     }
   }, [document])
 

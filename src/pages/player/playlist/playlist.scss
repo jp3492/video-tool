@@ -30,9 +30,6 @@
         border: none;
       }
     }
-    i[data-icon-active="true"] {
-      color: var(--color-amber);
-    }
     > .player-playlist__header-filter {
       grid-column: 1 / 4;
       display: grid;
@@ -83,16 +80,13 @@
     display: grid;
     grid-auto-rows: max-content;
     grid-row-gap: 3px;
-    > li {
+    > .player-playlist__list__tag {
       display: grid;
       padding: 5px;
       background-color: var(--color-grey-4);
       font-size: 90%;
       color: var(--color-grey-2);
-      &[data-tag-active="true"] {
-        // background-color: var(--color-grey-3);
-        color: var(--color-amber);
-      }
+
       > div:nth-of-type(1) {
         display: grid;
         align-items: center;
@@ -117,6 +111,7 @@
         grid-gap: 5px;
         grid-column-gap: 5px;
         padding-top: 5px;
+        padding-bottom: 0px;
         > p {
           border-right: 1px solid var(--color-grey-3);
           padding-right: 5px;
@@ -126,6 +121,22 @@
           grid-column: 2 / 3;
           place-self: center;
         }
+      }
+      > .player-playlist__list__tag-comment {
+        border-top: 1px solid var(--color-grey-3);
+        padding-top: 5px;
+        margin-top: 5px;
+        display: grid;
+        grid-template-columns: 1fr max-content;
+        column-gap: 10px;
+        > input {
+          background-color: var(--color-grey-2);
+          border-radius: 3px;
+        }
+      }
+      &[data-tag-active="true"] {
+        // background-color: var(--color-grey-3);
+        color: var(--color-amber);
       }
     }
   }

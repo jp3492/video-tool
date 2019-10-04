@@ -20,8 +20,11 @@ export const Input = () => {
   const [timeSelectedState, setTimeSelectedState] = quantumState({ id: PLAYER_STATES.TAG_TIME_SELECTED, initialValue: TIME_SELECTED_STATES.NONE })
   const [keyAction, setKeyAction] = quantumState({ id: PLAYER_STATES.KEY_ACTION })
   const [editingTag, setEditingTag] = quantumState({ id: PLAYER_STATES.EDITING_TAG, initialValue: null })
+  // console.log(inputState);
 
   const { state: time } = useTime({})
+
+  useEffect(() => () => { setKeyAction({ count: 0, action: "" }) }, [])
 
   const postTag = () => ACTION({
     ...requests.post,
@@ -129,6 +132,7 @@ export const Input = () => {
     if (inputState === INPUT_STATES.IDLE) {
       setTagContent({ text: "", start: null, end: null, _id: null })
       setTimeSelectedState(TIME_SELECTED_STATES.NONE)
+      setEditingTag(null)
     } else {
       const inputField = document.getElementById("inputField")
       if (inputField !== null) {
@@ -138,9 +142,11 @@ export const Input = () => {
   }, [inputState])
 
   useEffect(() => {
+    console.log("Editing Tag:", editingTag);
+
     if (!!editingTag) {
       setInputState(INPUT_STATES.END)
-    } else {
+    } else if (inputState !== INPUT_STATES.IDLE) {
       setInputState(INPUT_STATES.IDLE)
     }
   }, [editingTag])

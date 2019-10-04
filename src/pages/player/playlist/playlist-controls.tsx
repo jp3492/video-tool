@@ -22,7 +22,7 @@ export const PlaylistControls = ({
     return [...res, ...p.links.filter(l => res.every(r => r.url !== l.url))]
   }, []) : [], [selectedProjects])
 
-  const selectedTagLinks = useMemo(() => selectedTags.reduce((res, { url }) => res.every(l => l.url !== url) ? [...res, { url, label: links.find(l => l.url === url).label }] : res, []), [selectedTags, links])
+  const selectedTagLinks = useMemo(() => selectedTags.length === 0 ? links : selectedTags.reduce((res, { url }) => res.every(l => l.url !== url) ? [...res, { url, label: links.find(l => l.url === url).label }] : res, []), [selectedTags, links])
 
   const handleSaveAs = useCallback(() => openModal({
     title: "New Project",

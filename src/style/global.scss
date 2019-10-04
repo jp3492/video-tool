@@ -4,8 +4,32 @@
   font-family: Roboto;
 }
 
+html {
+  
+  min-height: 100%;
+  position: relative;
+}
+
 body {
   margin: 0;
+}
+
+#root {
+  display: grid;
+  position: relative;
+  min-height: 100vh;
+}
+
+.app {
+  height: 100%;
+}
+
+.app__content {
+  height: 100%;
+}
+
+.app__content > div, .app__content > div > div {
+  height: 100%
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -53,4 +77,9 @@ input:active, input {
   .pt-rf__fields {
     grid-row-gap: 0; 
   }
+}
+
+
+i[data-icon-active="true"] {
+  color: var(--color-amber);
 }

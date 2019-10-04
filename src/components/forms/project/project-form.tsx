@@ -37,6 +37,7 @@ export default props => {
     action,
     initialValues
   } = props
+  console.log(props);
 
   const handleSubmit = values => action({ ...values, folder, links }, initialValues ? initialValues._id : undefined)
 

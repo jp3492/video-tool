@@ -8,7 +8,7 @@ import { Header } from './components/header/header'
 import { Management, Player, Users } from './pages'
 
 import { initializeStores, quantumReducer } from '@piloteers/react-state'
-import { useAuthentication, AuthStatusEnum, signOut } from '@piloteers/react-authentication'
+import { useAuthentication, AuthStatusEnum, signOut } from './auth-package'
 import { stores } from './state/stores'
 
 import { REDUCERS } from './state/stores'
@@ -41,14 +41,21 @@ const headerProps = {
 }
 
 const App: React.FC = () => {
-  const { status, AuthInterface } = useAuthentication()
+  const { user, status, AuthInterface } = useAuthentication()
+  const { actions: { ACTION: USER_ACTION } } = quantumReducer({ id: REDUCERS.USERS, connect: false })
   const { actions: { ACTION: FOLDER_ACTION } } = quantumReducer({ id: REDUCERS.FOLDERS, connect: false })
   const { actions: { ACTION: PROJECT_ACTION } } = quantumReducer({ id: REDUCERS.PROJECTS, connect: false })
 
   useMemo(() => {
     if (status === AuthStatusEnum.SIGNED_IN) {
-      FOLDER_ACTION(requests.folders.get)
-      PROJECT_ACTION(requests.projects.get)
+      USER_ACTION({ ...requests.users.getSingle, url: requests.users.getSingle.url + user }).then(user => {
+        if (user.status === "CONFIRMED") {
+          FOLDER_ACTION(requests.folders.get)
+          PROJECT_ACTION(requests.projects.get)
+        } else {
+          alert("Your account has not been confirmed.")
+        }
+      })
     }
   }, [status])
 

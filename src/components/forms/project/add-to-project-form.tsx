@@ -12,7 +12,7 @@ export default ({
   const [selectedFolderId, setSelectedFolderId] = useState()
   const [selectedProjectIds, setSelectedProjectIds]: [any, any] = useState([])
 
-  const filteredProjects = useMemo(() => projects.filter(p => p.folder === selectedFolderId), [selectedFolderId])
+  const filteredProjects = useMemo(() => projects.filter(p => p.folder === selectedFolderId), [projects, selectedFolderId])
 
   const handleAddProjectId = _id => {
     if (selectedProjectIds.includes(_id)) {

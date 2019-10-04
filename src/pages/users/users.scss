@@ -1,9 +1,8 @@
 .users {
-  padding: 10px;
   display: grid;
-  grid-template-columns: 1fr max-content;
-  grid-column-gap: 10px;
+  grid-template-columns: max-content 1fr max-content;
   > .users__content {
+    padding: 10px;
     display: grid;
     grid-row-gap: 10px;
     grid-auto-rows: max-content;

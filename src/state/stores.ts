@@ -2,6 +2,8 @@
 
 import {
   ACTION,
+  REDUCER,
+  INITIAL_STATE,
   REDUCER_LIST,
   INITIAL_STATE_LIST
 } from './reducer';
@@ -10,10 +12,20 @@ export const REDUCERS = {
   FOLDERS: 'FOLDERS',
   PROJECTS: 'PROJECTS',
   USERS: 'USERS',
-  TAGS: 'TAGS'
+  TAGS: 'TAGS',
+  SEARCH: 'SEARCH'
 };
 
 export const stores = [
+  {
+    id: REDUCERS.SEARCH,
+    reducer: REDUCER,
+    initialState: INITIAL_STATE,
+    actions: { ACTION },
+    options: {
+      resourceIdName: "_id"
+    }
+  },
   {
     id: REDUCERS.FOLDERS,
     reducer: REDUCER_LIST,
@@ -47,7 +59,8 @@ export const stores = [
     initialState: INITIAL_STATE_LIST,
     actions: { ACTION },
     options: {
-      resourceIdName: "_id"
+      resourceIdName: "_id",
+      debug: true
     }
   },
 ];

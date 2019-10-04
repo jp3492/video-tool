@@ -1,3 +1,8 @@
+.app {
+  display: grid;
+  grid-template-rows: max-content 1fr;
+}
+
 .auth_wrapper {
   height: 70vh;
   display: grid;

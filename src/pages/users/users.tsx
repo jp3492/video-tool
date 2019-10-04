@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react'
 import './users.scss'
 
-import { getRequestStatus, signUp } from '@piloteers/react-authentication'
+import { getRequestStatus, signUp } from '../../auth-package'
 import { quantumState, quantumReducer } from '@piloteers/react-state'
 import { REDUCERS } from '../../state/stores'
 
@@ -9,13 +9,18 @@ import { MODAL, MODAL_TYPES } from '../../components/modal/modal'
 
 import { requests as allRequests } from '../../state/requests'
 import { Tabs } from '../../components/tabs/tabs'
+import { Folders } from '../../components/folders/folders'
 
 const requests = allRequests.users
 
 export const Users = (props: any) => {
+  const { state: { data: folders }, actions: { ACTION: FOLDER_ACTION } } = quantumReducer({ id: REDUCERS.FOLDERS })
   const { state: { data: users }, actions: { ACTION } } = quantumReducer({ id: REDUCERS.USERS })
-  // const { statuses, isLoading } = getRequestStatus({ requests })
   const [_, openModal] = quantumState({ id: MODAL, returnValue: false })
+  const [sideBarOpen, openSideBar] = useState(false)
+  const [selectedFolderId, setSelectedFolderId] = useState()
+  const [editingFolder, setEditingFolder] = useState()
+  console.log(users);
 
   const [selectedUserId, setSelectedUserId] = useState()
   const [search, setSearch] = useState("")
@@ -47,10 +52,43 @@ export const Users = (props: any) => {
     }
   }), [users, selectedUserId])
 
+  const handleEditingFolder = folder => {
+    if (editingFolder === folder) {
+      setEditingFolder(undefined)
+    } else {
+      setEditingFolder(folder)
+    }
+  }
+
   const selectedUser = useMemo(() => users.find(u => u._id === selectedUserId), [users, selectedUserId])
 
   return (
     <div className="users">
+      <div
+        data-sidebar-open={sideBarOpen}
+        className="users__sidebar">
+        <i
+          onClick={() => openSideBar(!sideBarOpen)}
+          className="material-icons">
+          chevron_right
+        </i>
+        <a
+          onClick={e => userModal()}
+          className="button">
+          <i
+            className="material-icons">
+            add
+          </i>
+          <label>
+            New Folder
+          </label>
+        </a>
+        <Folders
+          onChange={folder => setSelectedFolderId(folder)}
+          setEditingFolder={handleEditingFolder}
+          editingFolder={editingFolder}
+          folders={folders} />
+      </div>
       <div className="users__content">
         <div className="users__content-header">
           <input
@@ -105,6 +143,7 @@ export const Users = (props: any) => {
         <UserInformation
           handleEdit={() => userModal(selectedUser)}
           closeInfo={() => setSelectedUserId(undefined)}
+          patchUser={patchUser}
           {...selectedUser} />
       }
     </div>
@@ -179,14 +218,10 @@ const tabs = [
 ]
 
 const UserInformation = ({
-  email,
-  // status,
-  // connections,
-  // access,
-  // permissions,
-  information,
   closeInfo,
-  handleEdit
+  handleEdit,
+  patchUser,
+  ...user
 }: {
   email: string,
   status: string,
@@ -195,9 +230,19 @@ const UserInformation = ({
   permissions: string[],
   information: any,
   closeInfo: Function,
-  handleEdit: any
+  handleEdit: any,
+  patchUser: Function
 }) => {
   const [selectedTab, selectTab] = useState("Details")
+
+  const confirmUser = useCallback(() => {
+    patchUser({
+      ...user,
+      status: "CONFIRMED"
+    })
+  }, [user])
+
+  const { information, email } = user
 
   return (
     <div className="users__content-information">
@@ -223,7 +268,7 @@ const UserInformation = ({
       </div>
       {
         selectedTab === "Details" ?
-          <Details /> :
+          <Details status={user.status} confirmUser={confirmUser} /> :
           selectedTab === "Permissions" ?
             <Permissions /> :
             selectedTab === "Connections" ?
@@ -251,11 +296,16 @@ const UserInformation = ({
   )
 }
 
-const Details = () => {
+const Details = ({ confirmUser, status }) => {
 
   return (
     <div className="users__content-information-details">
-      Details
+      {
+        status !== "CONFIRMED" &&
+        <a onClick={confirmUser}>
+          Confirm
+          </a>
+      }
     </div>
   )
 }

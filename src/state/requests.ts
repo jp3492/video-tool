@@ -1,6 +1,14 @@
 import { REQUEST_TYPES } from './reducer'
 
 export const requests = {
+  search: {
+    post: {
+      api: "CONTENT",
+      method: "POST",
+      url: "/search",
+      trackId: "postSearch"
+    }
+  },
   folders: {
     get: {
       api: "CONTENT",

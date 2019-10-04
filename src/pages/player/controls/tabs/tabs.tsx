@@ -30,6 +30,7 @@ export const Tabs = ({
             0 :
             currentIndex + 1
       setSelectedTab(links[nextIndex].url)
+      setActiveTab(links[nextIndex].url)
     }
   }, [keyAction])
 

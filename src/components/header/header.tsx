@@ -1,8 +1,10 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, memo, useCallback, useEffect } from 'react'
 
 import './header.scss'
 
 import { Link } from '@reach/router'
+
+import { SearchBar } from './searchbar'
 
 interface iMenuItem {
   label: string,
@@ -53,18 +55,11 @@ export const Header = ({
 
   return (
     <header id="header">
-      {/* <img
+      <img
         src={logo}
         height="50px"
-        width="auto" /> */}
-      <div className="header-logo">
-        <h1>
-          Viden
-        </h1>
-        <span>
-          Manage videos online. The right way
-        </span>
-      </div>
+        width="auto" />
+      <SearchBar />
       <i
         data-menu-icon-open={open}
         onClick={() => setOpen(!open)}
@@ -72,6 +67,7 @@ export const Header = ({
         {open ? "close" : "menu"}
       </i>
       <div
+        className="header__navigation"
         data-mobile-menu-open={open}
         data-mobile-nav-selected={selectedTab === "nav"}>
         <ul className="header__drop-header">
@@ -115,6 +111,7 @@ const MobileTab = ({
   selectTab: Function
 }) => (
     <li
+      key={String(label) + icon}
       data-mobile-tab-selected={selected}
       onClick={() => selectTab(label)}>
       <i className="material-icons">
@@ -131,7 +128,7 @@ const Component = ({
   const HeaderComponent = headerComponent
 
   return (
-    <li>
+    <li key={String(label) + icon}>
       {
         !!headerComponent ?
           <HeaderComponent /> :
@@ -147,20 +144,19 @@ const Component = ({
     </li>
   )
 }
-
 const MenuItem = ({
   label,
   to,
   icon
 }: iMenuItem) => (
-    <li>
+    <li key={label}>
       <Link to={to}>
         <i className="material-icons">
           {icon}
         </i>
-        <label>
+        {/* <label>
           {label}
-        </label>
+        </label> */}
       </Link>
     </li>
   )

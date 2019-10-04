@@ -1,4 +1,4 @@
-import { request } from '@piloteers/react-authentication'
+import { request } from '../auth-package'
 import { mergeArrayByKey } from '../utils'
 
 export enum REQUEST_TYPES {
@@ -62,7 +62,7 @@ export const ACTION = (requestOptions: RequestOptions) => async dispatch => {
         }
       }
     }
-    const response = await request({
+    const response: any = await request({
       method: restMethod,
       ...requestProps
     })
@@ -72,7 +72,6 @@ export const ACTION = (requestOptions: RequestOptions) => async dispatch => {
         [requestId]: response.data.lastEvaluatedId
       }
     }
-
     dispatch({
       type: REQUEST_TYPES[method.toUpperCase()],
       data: response.data
@@ -172,6 +171,9 @@ export const REDUCER_LIST = (state: InitialState, action: Action, options: any) 
     console.log("Action:", action)
     console.log("New State:", newDataState)
   }
+
+  console.log(newDataState);
+
 
   switch (action.type) {
     case REQUEST_TYPES.ADD_TAG_TO_PROJECT:

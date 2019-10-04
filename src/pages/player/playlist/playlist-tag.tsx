@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 
 import { quantumState } from '@piloteers/react-state'
 import { PLAYER_STATES } from '../states'
@@ -29,6 +29,8 @@ export const Tag = ({
   const [editingTag, setEditingTag] = quantumState({ id: PLAYER_STATES.EDITING_TAG })
   const [tagContent, setTagContent] = quantumState({ id: PLAYER_STATES.TAG_CONTENT, returnValue: false })
   const { state: active } = useTime({ url, start, end })
+  const [commentOpen, setCommentOpen] = useState(false)
+  const [comment, setComment] = useState("")
 
   const handleEditTag = useCallback(() => {
     if (editingTag !== _id) {
@@ -40,9 +42,19 @@ export const Tag = ({
     }
   }, [_id, editingTag, start, end, text, _id])
 
+  const handleCommentClick = useCallback(e => {
+    e.stopPropagation()
+    if (commentOpen) {
+      setComment("")
+    }
+    setCommentOpen(!commentOpen)
+  }, [commentOpen])
+
   return (
     <li
+      className="player-playlist__list__tag"
       data-tag-active={active}
+      onDoubleClick={handleEditTag}
       onClick={() => handleSelectTag(url, start)}>
       <div>
         <span>
@@ -69,15 +81,31 @@ export const Tag = ({
           {text}
         </p>
         <i
-          onClick={handleEditTag}
+          onClick={handleCommentClick}
           className="material-icons">
           {
-            editingTag === _id ?
+            commentOpen ?
               "clear" :
-              "edit"
+              "comment"
           }
         </i>
       </div>
+      {
+        commentOpen &&
+        <div
+          onDoubleClick={e => { e.stopPropagation() }}
+          onClick={e => { e.stopPropagation() }}
+          className="player-playlist__list__tag-comment">
+          <input
+
+            type="text"
+            value={comment}
+            onChange={({ target: { value } }) => setComment(value)} />
+          <i className="material-icons">
+            send
+          </i>
+        </div>
+      }
     </li>
   )
 }
