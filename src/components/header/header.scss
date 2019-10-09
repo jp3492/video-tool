@@ -132,6 +132,14 @@ header {
             }
           }
         }
+        > .searchbar-result__tags {
+          > ul {
+            > li {
+              display: grid;
+              grid-template-columns: max-content 1fr max-content max-content;
+            }
+          }
+        }
         > .searchbar-close {
           grid-template-columns: 1fr;
           align-items: center;

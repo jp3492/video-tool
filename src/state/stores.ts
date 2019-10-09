@@ -13,10 +13,20 @@ export const REDUCERS = {
   PROJECTS: 'PROJECTS',
   USERS: 'USERS',
   TAGS: 'TAGS',
-  SEARCH: 'SEARCH'
+  SEARCH: 'SEARCH',
+  REQUESTS: 'REQUESTS'
 };
 
 export const stores = [
+  {
+    id: REDUCERS.REQUESTS,
+    reducer: REDUCER_LIST,
+    initialState: INITIAL_STATE_LIST,
+    actions: { ACTION },
+    options: {
+      resourceIdName: "_id"
+    }
+  },
   {
     id: REDUCERS.SEARCH,
     reducer: REDUCER,

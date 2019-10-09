@@ -1,6 +1,26 @@
 import { REQUEST_TYPES } from './reducer'
 
 export const requests = {
+  requests: {
+    get: {
+      api: "CONTENT",
+      method: "GET",
+      url: "/request",
+      trackId: "getRequests"
+    },
+    post: {
+      api: "CONTENT",
+      method: "POST",
+      url: "/request",
+      trackId: "postRequest"
+    },
+    patch: {
+      api: "CONTENT",
+      method: "PATCH",
+      url: "/request",
+      trackId: "patchRequest"
+    }
+  },
   search: {
     post: {
       api: "CONTENT",

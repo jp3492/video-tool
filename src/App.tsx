@@ -7,12 +7,13 @@ import { Header } from './components/header/header'
 
 import { Management, Player, Users } from './pages'
 
-import { initializeStores, quantumReducer } from '@piloteers/react-state'
+import { initializeStores, quantumReducer, quantumState } from '@piloteers/react-state'
 import { useAuthentication, AuthStatusEnum, signOut } from './auth-package'
 import { stores } from './state/stores'
 
 import { REDUCERS } from './state/stores'
 import { requests } from './state/requests'
+import { PreviewPlayer } from './components/preview-player/preview-player'
 
 initializeStores(stores)
 
@@ -45,13 +46,16 @@ const App: React.FC = () => {
   const { actions: { ACTION: USER_ACTION } } = quantumReducer({ id: REDUCERS.USERS, connect: false })
   const { actions: { ACTION: FOLDER_ACTION } } = quantumReducer({ id: REDUCERS.FOLDERS, connect: false })
   const { actions: { ACTION: PROJECT_ACTION } } = quantumReducer({ id: REDUCERS.PROJECTS, connect: false })
-
+  const { actions: { ACTION: REQUEST_ACTION } } = quantumReducer({ id: REDUCERS.REQUESTS, connect: false })
+  const [me, setMe] = quantumState({ id: "ME", initialValue: {}, returnValue: false })
   useMemo(() => {
     if (status === AuthStatusEnum.SIGNED_IN) {
       USER_ACTION({ ...requests.users.getSingle, url: requests.users.getSingle.url + user }).then(user => {
+        setMe(user)
         if (user.status === "CONFIRMED") {
           FOLDER_ACTION(requests.folders.get)
           PROJECT_ACTION(requests.projects.get)
+          REQUEST_ACTION(requests.requests.get)
         } else {
           alert("Your account has not been confirmed.")
         }
@@ -77,6 +81,7 @@ const App: React.FC = () => {
             <Users exact path="/users" />
             <Player exact path="/player" />
           </Router>
+          <PreviewPlayer />
         </div>
       </div>
     )

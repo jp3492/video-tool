@@ -172,9 +172,6 @@ export const REDUCER_LIST = (state: InitialState, action: Action, options: any) 
     console.log("New State:", newDataState)
   }
 
-  console.log(newDataState);
-
-
   switch (action.type) {
     case REQUEST_TYPES.ADD_TAG_TO_PROJECT:
       return {

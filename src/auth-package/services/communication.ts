@@ -36,10 +36,10 @@ interface iRequests {
 }
 
 export const GetRequestStatus = ({
-  requests,
+  requests = {},
   preventRender = false
 }: {
-  requests: iRequests,
+  requests?: iRequests,
   preventRender?: boolean
 }) => {
   const [state, setState] = useState(Object.keys(requests).map(k => requests[k].trackId).reduce((res, id) => ({ ...res, [id]: RequestStatusEnum.IDEL }), {}))
@@ -207,6 +207,8 @@ export const request = async (req: iReq) => {
         data: body,
         params
       })
+      console.log(trackId);
+
       updateRequestStatus(trackId, RequestStatusEnum.SUCCESS)
       return data
     } catch (error) {

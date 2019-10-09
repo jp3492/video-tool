@@ -7,7 +7,7 @@ import { getTranslation } from '../services/translation'
 
 import { ViewEnum, StatusEnum } from '../models/enums'
 import { iInterface, IdentityAttributes } from '../models/interfaces'
-import { signIn, signUp, completePassword, forgotPassword, forgotPasswordSubmit, changePassword, confirm, refreshSession } from '../methods'
+import { signIn, signUp, completePassword, forgotPassword, forgotPasswordSubmit, changePassword, confirm } from '../methods'
 
 import { username } from './use_authentication'
 

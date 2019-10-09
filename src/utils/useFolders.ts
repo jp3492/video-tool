@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react'
+import { quantumState } from '@piloteers/react-state'
 
 interface UseFolders {
   folders: any[],
@@ -24,7 +25,7 @@ export const useFolders = ({
   folders,
   resourceIdName
 }: UseFolders) => {
-  const [selectedFolder, setSelectedFolder] = useState(undefined)
+  const [selectedFolder, setSelectedFolder] = quantumState({ id: "SELECTED_FOLDER", initialValue: undefined })
   const [openedFolders, setOpenedFolders]: [any, any] = useState([])
 
   const nestedFolders = useMemo(() =>
