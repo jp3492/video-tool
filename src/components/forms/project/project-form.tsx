@@ -37,9 +37,8 @@ export default props => {
     action,
     initialValues
   } = props
-  console.log(props);
 
-  const handleSubmit = values => action({ ...values, folder, links }, initialValues ? initialValues._id : undefined)
+  const handleSubmit = values => action({ ...initialValues, ...values, folder, links })
 
   const handleLinkAdded = url =>
     ReactPlayer.canPlay(url) ?

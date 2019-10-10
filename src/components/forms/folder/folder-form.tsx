@@ -42,12 +42,7 @@ export default props => {
     initialValues
   } = props
 
-  const handleSubmit = values => {
-    action({
-      ...values,
-      folder
-    })
-  }
+  const handleSubmit = values => action({ ...initialValues, ...values, folder })
 
   return (
     <div className="folder-form">

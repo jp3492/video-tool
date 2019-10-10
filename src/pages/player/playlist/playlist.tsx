@@ -2,15 +2,11 @@ import React, { useState, useMemo, useCallback } from 'react'
 import './playlist.scss'
 
 import { PLAYER_STATES } from '../states'
-import { quantumState, quantumReducer, setQuantumValue } from '@piloteers/react-state'
+import { quantumState, quantumReducer } from '@piloteers/react-state'
 import { REDUCERS } from '../../../state/stores'
-
-import { requests as allRequests } from '../../../state/requests'
 
 import { PlaylistControls } from './playlist-controls'
 import { Tag } from './playlist-tag'
-
-const requests = allRequests.projects
 
 enum SettingsTarget {
   VIDEO = "VIDEO",
@@ -35,7 +31,7 @@ const intialFilter = { time: { active: false, asc: false, rank: 0 }, video: { ac
 
 export const Playlist = (props: any) => {
   const { state: { data: tags } } = quantumReducer({ id: REDUCERS.TAGS })
-  const { state: { data: projects }, actions: { ACTION: PROJECT_ACTION } } = quantumReducer({ id: REDUCERS.PROJECTS })
+  const { state: { data: projects } } = quantumReducer({ id: REDUCERS.PROJECTS })
 
   const [projectIds] = quantumState({ id: PLAYER_STATES.PROJECT_ID })
   const [playlistOpen] = quantumState({ id: PLAYER_STATES.PLAYLIST_OPEN })
@@ -103,33 +99,6 @@ export const Playlist = (props: any) => {
 
   const selectedTags = useMemo(() => tags.filter(t => selectedTagIds.includes(t._id)), [selectedTagIds, tags])
 
-  const tagsToSave = selectedTagIds.length === 0 ? filteredTags : selectedTags
-
-  const postProject = (values) => PROJECT_ACTION({
-    ...requests.post, body: {
-      ...values,
-      tags: tagsToSave
-    }
-  }).then(res => setQuantumValue("MODAL", {}))
-
-  const patchProject = (values) => PROJECT_ACTION({
-    ...requests.patch,
-    url: requests.patch.url + values._id,
-    body: values
-  }).then(res => console.log(res))
-
-  const addTagsToProject = projectIds => projectIds.forEach(id => {
-    const project = projects.find(p => p._id === id)
-    const updatedProject = {
-      ...project,
-      tags: [
-        ...project.tags,
-        ...selectedTags
-      ]
-    }
-    patchProject(updatedProject)
-  })
-
   const handleChangeSubheader = useCallback(type => setOpenSubHeader(openSubHeader === type ? "" : type), [openSubHeader])
   const handleSetSettings = useCallback((key, value) => setSettings({ ...settings, [key]: value }), [settings])
 
@@ -180,12 +149,9 @@ export const Playlist = (props: any) => {
         }
       </ul>
       <PlaylistControls
-        postProject={postProject}
-        patchProject={patchProject}
         projects={projects}
-        projectIds={JSON.parse(projectIds)}
-        selectedTags={selectedTags}
-        addTagsToProject={addTagsToProject} />
+        projectIds={projectIds}
+        selectedTags={selectedTags} />
     </div>
   )
 }
@@ -203,13 +169,6 @@ const typeIcon = {
   [SettingsType.LOOP]: "repeat",
   [SettingsType.PLAY_TO_END]: "last_page",
   [SettingsType.RANDOM]: "shuffle"
-}
-
-const getNextInEnum = (e, val) => {
-  const arr = Object.keys(e)
-  const activeIndex = arr.indexOf(val)
-  const nextIndex = activeIndex === arr.length - 1 ? 0 : activeIndex + 1
-  return arr[nextIndex]
 }
 
 const Settings = ({
@@ -245,30 +204,6 @@ const Settings = ({
           ))
         }
       </div>
-      {/* <i
-        onClick={() => handleSetSettings("loop")}
-        data-icon-active={settings.loop}
-        className="material-icons">
-        repeat
-      </i>
-      <i
-        onClick={() => handleSetSettings("tagForTag")}
-        data-icon-active={settings.tagForTag}
-        className="material-icons">
-        playlist_play
-      </i>
-      <i
-        onClick={() => handleSetSettings("stopAfterTag")}
-        data-icon-active={settings.stopAfterTag}
-        className="material-icons">
-        last_page
-      </i>
-      <i
-        onClick={() => handleSetSettings("selectionOnly")}
-        data-icon-active={settings.selectionOnly}
-        className="material-icons">
-        check_box
-      </i> */}
     </div>
   )
 }

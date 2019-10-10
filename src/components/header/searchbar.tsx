@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useState, memo } from 'react'
+import React, { useCallback, useEffect, useState, memo, useMemo } from 'react'
 import { quantumReducer, quantumState, getStateById } from '@piloteers/react-state'
 import { REDUCERS } from '../../state/stores'
 import { requests as allRequests } from '../../state/requests'
 import { getRequestStatus, RequestStatusEnum } from "../../auth-package"
 import { Link } from '@reach/router'
+import { MODAL, MODAL_TYPES } from '../modal/modal'
 
 const requests = allRequests.search
 
@@ -58,6 +59,8 @@ const getLocalSearchResult = (search: string, options: any) => {
 
 export const SearchBar = memo(() => {
   const { state: { data: searchResult }, actions: { ACTION }, dispatch } = quantumReducer({ id: REDUCERS.SEARCH })
+  const { state: { data: folders } } = quantumReducer({ id: REDUCERS.FOLDERS })
+  const { actions: { ACTION: PROJECT_ACTION } } = quantumReducer({ id: REDUCERS.PROJECTS, connect: false })
 
   const { actions: { ACTION: TAGS_ACTION } } = quantumReducer({ id: REDUCERS.TAGS, connect: false })
   const { statuses }: any = getRequestStatus({ requests: allRequests.search })
@@ -65,6 +68,21 @@ export const SearchBar = memo(() => {
   const [options, setOption] = useState({ global: false, user: false, project: false, folder: false, tag: false })
   const [searchOpen, setSearchOpen] = useState(false)
   const [selectedFolder, setSelectedFolder] = quantumState({ id: "SELECTED_FOLDER", returnValue: false })
+
+  // const postProject = body => PROJECT_ACTION({ ...allRequests.projects.post, body }).then(() => openModal({}))
+
+  // const handleSaveAs = useCallback(() => openModal({
+  //   title: "New Project",
+  //   name: MODAL_TYPES.PROJECT_FORM,
+  //   props: {
+  //     folders,
+  //     selectedFolderId: undefined,
+  //     action: postProject,
+  //     initialValues: {
+  //       links: selectedTagLinks
+  //     }
+  //   }
+  // }), [folders, postProject, selectedTagLinks])
 
   const postSearch = useCallback(async () => {
     setSearchOpen(true)
@@ -154,9 +172,9 @@ export const SearchBar = memo(() => {
                       Object.keys(searchResult).map((type, i) => {
                         switch (type) {
                           case "user": return <Users users={searchResult[type]} />
-                          case "project": return <Projects projects={searchResult[type]} requestAccess={requestAccess} />
+                          case "project": return <Projects projects={searchResult[type]} requestAccess={requestAccess} folders={folders} />
                           case "folder": return <Folders folders={searchResult[type]} openFolder={handleOpenFolder} />
-                          case "tag": return <Tags tags={searchResult[type]} />
+                          case "tag": return <Tags tags={searchResult[type]} folders={folders} />
                         }
                       })
                     }
@@ -179,18 +197,24 @@ export const SearchBar = memo(() => {
 })
 
 const Tags = ({
-  tags
+  tags,
+  folders
 }) => {
   const [previewTag, setPreviewTag] = quantumState({ id: "PREVIEW" })
   const [selectedTags, setSelectedTags]: any = useState([])
 
-  const handleSelectTag = useCallback(id => {
-    if (selectedTags.includes(id)) {
-      setSelectedTags(selectedTags.filter(t => t !== id))
+  const handleSelectTag = useCallback(id => selectedTags.includes(id) ? setSelectedTags(selectedTags.filter(t => t !== id)) : setSelectedTags([...selectedTags, id]), [selectedTags])
+
+  const selectedTagLinks = useMemo(() => selectedTags.reduce((res, t) => {
+    const thisTag = tags.find(tag => tag._id === t)
+    if (res.includes(thisTag.url)) {
+      return res
     } else {
-      setSelectedTags([...selectedTags, id])
+      return [...res, thisTag.url]
     }
-  }, [selectedTags])
+  }, [])
+    , [tags, selectedTags])
+
 
   return (
     <li className="searchbar-result__tags">
@@ -223,6 +247,30 @@ const Tags = ({
                 </i>
             </li>
           ))
+        }
+        {
+          selectedTags.length > 0 &&
+          <li className="searchbar-result__tag-selection">
+            <label>
+              {`${selectedTags.length} Tags${selectedTags.length === 1 ? "" : "s"} selected`}
+            </label>
+            <div>
+              {/* <label>
+                Save as
+                  </label> */}
+              <i className="material-icons">
+                save
+                  </i>
+            </div>
+            <div>
+              {/* <label>
+                Open in Player
+                  </label> */}
+              <i className="material-icons">
+                play_arrow
+                  </i>
+            </div>
+          </li>
         }
       </ul>
     </li>
@@ -264,7 +312,8 @@ const Folders = ({
 
 const Projects = ({
   projects,
-  requestAccess
+  requestAccess,
+  folders
 }) => {
   const [selectedProjects, setSelectedProjects]: any = useState([])
 
@@ -312,10 +361,18 @@ const Projects = ({
             <label>
               {`${selectedProjects.length} Project${selectedProjects.length === 1 ? "" : "s"} selected`}
             </label>
+            <div>
+              {/* <label>
+                Save as
+                  </label> */}
+              <i className="material-icons">
+                save
+                  </i>
+            </div>
             <Link to={`/player?ids=${JSON.stringify(selectedProjects)}`}>
-              <label>
+              {/* <label>
                 Open in Player
-                  </label>
+                  </label> */}
               <i className="material-icons">
                 play_arrow
                   </i>

@@ -1,23 +1,16 @@
-import React, { useCallback, useState, useMemo, useEffect } from 'react'
+import React, { useCallback, useState, useMemo } from 'react'
 import './management.scss'
 
-import { getRequestStatus } from '../../auth-package'
 import { quantumState, quantumReducer } from '@piloteers/react-state'
 import { REDUCERS } from '../../state/stores'
 
 import { Link } from '@reach/router'
 
-import { MODAL, MODAL_TYPES } from '../../components/modal/modal'
 import { Folders } from '../../components/folders/folders'
 import { Tabs } from '../../components/tabs/tabs'
 
-import { requests } from '../../state/requests'
+import { patchProject, folderModal, projectModal } from '../../state/actions'
 import ReactPlayer from 'react-player'
-
-const {
-  folders: folderRequests,
-  projects: projectRequests
-} = requests
 
 const tabs = [
   {
@@ -31,73 +24,42 @@ const tabs = [
 ]
 
 export const Management = (props: any) => {
-  const { state: { data: folders }, actions: { ACTION: FOLDER_ACTION } } = quantumReducer({ id: REDUCERS.FOLDERS })
-  const { state: { data: projects }, actions: { ACTION: PROJECT_ACTION } } = quantumReducer({ id: REDUCERS.PROJECTS })
+  const { state: { data: folders } } = quantumReducer({ id: REDUCERS.FOLDERS })
+  const { state: { data: projects } } = quantumReducer({ id: REDUCERS.PROJECTS })
+  console.log(folders);
 
-  const { statuses, isLoading } = getRequestStatus({ requests: {} })
-
-  const [_, openModal] = quantumState({ id: MODAL, returnValue: false })
   const [sideBarOpen, openSideBar] = useState(false)
   const [search, setSearch] = useState("")
 
   const [selectedProjectId, setSelectedProjectId] = useState()
   const [selectedProjectIds, setSelectedProjectIds]: [any, any] = useState([])
 
-  const [selectedFolderId, setSelectedFolderId] = useState()
+  const [selectedFolderId, setSelectedFolderId] = quantumState({ id: "SELECTED_FOLDER_ID", initialValue: "" })
   const [editingFolder, setEditingFolder] = useState()
 
-  const postFolder = body => FOLDER_ACTION({ ...folderRequests.post, body }).then(() => openModal({}))
-  const postProject = body => PROJECT_ACTION({ ...projectRequests.post, body }).then(() => openModal({}))
+  const handleEditingFolder = useCallback(folder =>
+    editingFolder === folder ? setEditingFolder(undefined) : setEditingFolder(folder)
+    , [editingFolder])
 
-  const patchFolder = (_id, body) => FOLDER_ACTION({ ...folderRequests.patch, url: folderRequests.patch.url + _id, body }).then(() => openModal({}))
-  const patchProject = (_id, body) => PROJECT_ACTION({ ...projectRequests.patch, url: projectRequests.patch.url + _id, body }).then(() => openModal({}))
+  const handleAddProjectId = useCallback(_id =>
+    selectedProjectIds.includes(_id) ? setSelectedProjectIds(selectedProjectIds.filter(p => p !== _id)) : setSelectedProjectIds([...selectedProjectIds, _id])
+    , [selectedProjectIds])
 
-  // const deleteFolder = _id => FOLDER_ACTION({ ...folderRequests.delete, url: folderRequests.patch.url + _id }).then(() => openModal({}))
-  // const deleteProject = _id => FOLDER_ACTION({ ...projectRequests.delete, url: projectRequests.patch.url + _id }).then(() => openModal({}))
+  const selectedFolder = useMemo(() =>
+    folders.find(f => f._id === selectedFolderId)
+    , [selectedFolderId, folders])
 
-  const folderModal = useCallback((initialValues?: any) => openModal({
-    title: initialValues ? "Edit Folder" : "New Folder",
-    name: MODAL_TYPES.FOLDER_FORM,
-    props: {
-      folders,
-      selectedFolderId,
-      action: initialValues ? patchFolder : postFolder,
-      initialValues
-    }
-  }), [folders, selectedFolderId])
+  const selectProject = useCallback(_id =>
+    setSelectedProjectId(_id)
+    , [])
 
-  const projectModal = useCallback((initialValues?: any) => openModal({
-    title: initialValues ? "Edit Project" : "New Project",
-    name: MODAL_TYPES.PROJECT_FORM,
-    props: {
-      folders,
-      selectedFolderId,
-      action: initialValues && initialValues.hasOwnProperty("_id") ? (body, _id) => patchProject(_id, { ...initialValues, ...body }) : postProject,
-      initialValues
-    }
-  }), [folders, selectedFolderId])
+  const selectedProject = useMemo(() =>
+    projects.find(p => p._id === selectedProjectId) || {}
+    , [selectedProjectId, projects])
 
-  const handleEditingFolder = folder => {
-    if (editingFolder === folder) {
-      setEditingFolder(undefined)
-    } else {
-      setEditingFolder(folder)
-    }
-  }
-
-  const handleAddProjectId = _id => {
-    if (selectedProjectIds.includes(_id)) {
-      setSelectedProjectIds(selectedProjectIds.filter(p => p !== _id))
-    } else {
-      setSelectedProjectIds([...selectedProjectIds, _id])
-    }
-  }
-
-  const selectedFolder = useMemo(() => folders.find(f => f._id === selectedFolderId), [selectedFolderId, folders])
-
-  const selectProject = useCallback(_id => setSelectedProjectId(_id), [])
-  const selectedProject = useMemo(() => projects.find(p => p._id === selectedProjectId) || {}, [selectedProjectId, projects])
-  const filteredProjects = useMemo(() => projects.filter(p => p.folder === selectedFolderId), [selectedFolderId, projects])
+  const filteredProjects = useMemo(() =>
+    projects.filter(p => p.folder === selectedFolderId)
+    , [selectedFolderId, projects])
 
   const handleUrlDrop = useCallback((e, target) => {
     e.stopPropagation()
@@ -114,7 +76,7 @@ export const Management = (props: any) => {
             const thisProject = projects.find(p => p._id === target.id)
             if (thisProject.links.every(l => l.url !== link)) {
               const label = prompt("Please assign a label for inserted link")
-              patchProject(target.id, { ...thisProject, links: [...thisProject.links, { url: link, label }] })
+              patchProject({ ...thisProject, _id: target.id, links: [...thisProject.links, { url: link, label }] })
             } else {
               const thisLink = thisProject.links.find(l => l.url === link)
               alert(`Link already exists: ${thisLink.label}`)

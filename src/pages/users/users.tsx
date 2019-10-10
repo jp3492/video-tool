@@ -1,10 +1,10 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react'
 import './users.scss'
 
-import { getRequestStatus, signUp } from '../../auth-package'
+import { signUp } from '../../auth-package'
 import { quantumState, quantumReducer } from '@piloteers/react-state'
 import { REDUCERS } from '../../state/stores'
-
+import { getUsers } from '../../state/actions'
 import { MODAL, MODAL_TYPES } from '../../components/modal/modal'
 
 import { requests as allRequests } from '../../state/requests'
@@ -14,21 +14,18 @@ import { Folders } from '../../components/folders/folders'
 const requests = allRequests.users
 
 export const Users = (props: any) => {
-  const { state: { data: folders }, actions: { ACTION: FOLDER_ACTION } } = quantumReducer({ id: REDUCERS.FOLDERS })
+  const { state: { data: folders } } = quantumReducer({ id: REDUCERS.FOLDERS })
   const { state: { data: users }, actions: { ACTION } } = quantumReducer({ id: REDUCERS.USERS })
   const [_, openModal] = quantumState({ id: MODAL, returnValue: false })
   const [sideBarOpen, openSideBar] = useState(false)
   const [selectedFolderId, setSelectedFolderId] = useState()
   const [editingFolder, setEditingFolder] = useState()
-  console.log(users);
 
   const [selectedUserId, setSelectedUserId] = useState()
   const [search, setSearch] = useState("")
 
   useEffect(() => {
-    ACTION({
-      ...requests.get
-    })
+    getUsers()
   }, [])
 
   const postUser = async body => {

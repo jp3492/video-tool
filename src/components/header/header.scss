@@ -100,7 +100,7 @@ header {
             gap: 5px;
             > li {
               display: grid;
-              grid-template-columns: 1fr max-content;
+              grid-template-columns: 1fr max-content max-content;
               gap: 10px;
               align-items: center;
               > div {
@@ -113,16 +113,17 @@ header {
             > .searchbar-result__project {
               grid-template-columns: max-content 1fr max-content;
             }
-            > .searchbar-result__project-selection {
-              a {
+            > .searchbar-result__project-selection, .searchbar-result__tag-selection {
+              grid-template-columns: 1fr max-content max-content !important;
+              div, a {
                 display: grid;
                 grid-auto-flow: column;
                 place-items: center;
                 gap: 5px;
                 padding: 5px;
-                padding-left: 10px;
                 border-radius: 4px;
-                background-color: var(--color-grey-2);
+                // background-color: var(--color-grey-2);
+                // border: 2px solid var(--color-grey-2);
                 color: var(--color-grey-4);
                 cursor: pointer;
                 * {

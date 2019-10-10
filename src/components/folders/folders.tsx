@@ -30,12 +30,9 @@ export const Folders = memo(({
     openedFolders
   } = useFolders({
     folders,
-    resourceIdName: "_id"
+    resourceIdName: "_id",
+    initialSelectedFolder
   })
-
-  useEffect(() => {
-    selectFolder(initialSelectedFolder)
-  }, [initialSelectedFolder])
 
   useEffect(() => {
     onChange(selectedFolder)

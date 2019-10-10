@@ -3,68 +3,50 @@ import React, { useState, useCallback, useMemo } from 'react'
 import { MODAL, MODAL_TYPES } from '../../../components/modal/modal'
 import { quantumState, quantumReducer } from '@piloteers/react-state'
 import { REDUCERS } from '../../../state/stores'
+import { projectModal, addTagsToProjectsModal, patchProject, removeTagsFromProject } from '../../../state/actions'
 
 export const PlaylistControls = ({
   selectedTags,
-  postProject,
-  patchProject,
-  projects,
   projectIds,
-  addTagsToProject
+  projects
 }) => {
-  const { state: { data: folders } } = quantumReducer({ id: REDUCERS.FOLDERS })
-  const [_, openModal] = quantumState({ id: MODAL, returnValue: false })
   const [deleting, setDeleting] = useState(false)
-
   const selectedProjects = useMemo(() => projects.filter(p => projectIds.includes(p._id)), [projects, projectIds])
 
   const links = useMemo(() => selectedProjects.length !== 0 ? selectedProjects.reduce((res, p) => {
     return [...res, ...p.links.filter(l => res.every(r => r.url !== l.url))]
   }, []) : [], [selectedProjects])
 
-  const selectedTagLinks = useMemo(() => selectedTags.length === 0 ? links : selectedTags.reduce((res, { url }) => res.every(l => l.url !== url) ? [...res, { url, label: links.find(l => l.url === url).label }] : res, []), [selectedTags, links])
+  const selectedTagLinks = useMemo(() =>
+    selectedTags.length === 0 ?
+      links :
+      selectedTags.reduce((res, { url }) =>
+        res.every(l => l.url !== url) ?
+          [...res, { url, label: links.find(l => l.url === url).label }] :
+          res
+        , []), [selectedTags, links])
 
-  const handleSaveAs = useCallback(() => openModal({
-    title: "New Project",
-    name: MODAL_TYPES.PROJECT_FORM,
-    props: {
-      folders,
-      selectedFolderId: undefined,
-      action: postProject,
-      initialValues: {
-        links: selectedTagLinks
-      }
-    }
-  }), [folders, postProject, selectedTagLinks])
+  const handleAddTo = useCallback(() => {
+    addTagsToProjectsModal(selectedTagLinks, selectedTags.map(({ _id }) => _id))
+  }, [selectedTagLinks])
 
-  const handleAddTo = useCallback(() => openModal({
-    title: "New Project",
-    name: MODAL_TYPES.ATT_TO_PROJECT_FORM,
-    props: {
-      folders,
-      projects,
-      selectedFolderId: undefined,
-      action: addTagsToProject,
-      initialValues: {
-        links: selectedTagLinks
-      }
-    }
-  }), [folders, postProject, selectedTagLinks])
+  const handleSaveAs = useCallback(() => {
+    projectModal({
+      tags: selectedTags,
+      links: selectedTagLinks
+    })
+  }, [selectedTags, selectedTagLinks])
 
   const handleDelete = useCallback(confirmed => {
     if (!deleting) {
       setDeleting(true)
     } else {
       if (confirmed) {
-        const thisProject = projects.find(({ _id }) => _id === projectIds[0])
-        patchProject({
-          ...thisProject,
-          tags: thisProject.tags.filter(tag => !selectedTags.map(({ _id }) => _id).includes(tag))
-        })
+        removeTagsFromProject(selectedTags)
       }
       setDeleting(false)
     }
-  }, [deleting])
+  }, [deleting, selectedTags])
 
   return (
     <div className="player-playlist__controls">
@@ -113,7 +95,7 @@ export const PlaylistControls = ({
               </label>
             </div>
           </> :
-          projectIds.length > 1 ?
+          JSON.parse(projectIds).length > 1 ?
             <div onClick={handleSaveAs}>
               <i className="material-icons">
                 note_add

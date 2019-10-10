@@ -3,7 +3,8 @@ import { quantumState } from '@piloteers/react-state'
 
 interface UseFolders {
   folders: any[],
-  resourceIdName: string
+  resourceIdName: string,
+  initialSelectedFolder?: string
 }
 
 const getChildFolders = (folders, folder) => folders.filter(f => f.folder === folder)
@@ -23,13 +24,14 @@ const reduceFolders = (folders, folder, resourceIdName) =>
 
 export const useFolders = ({
   folders,
-  resourceIdName
+  resourceIdName,
+  initialSelectedFolder
 }: UseFolders) => {
-  const [selectedFolder, setSelectedFolder] = quantumState({ id: "SELECTED_FOLDER", initialValue: undefined })
+  const [selectedFolder, setSelectedFolder] = quantumState({ id: "SELECTED_FOLDER", initialValue: initialSelectedFolder })
   const [openedFolders, setOpenedFolders]: [any, any] = useState([])
 
   const nestedFolders = useMemo(() =>
-    reduceFolders(folders, undefined, resourceIdName)
+    reduceFolders(folders, null, resourceIdName)
     , [folders])
 
   const selectFolder = useCallback(_id =>

@@ -11,9 +11,7 @@ import { PLAYER_STATES, KEY_ACTIONS } from './states'
 import { quantumState, quantumReducer } from '@piloteers/react-state'
 import { REDUCERS } from '../../state/stores'
 import { requests as allRequests } from '../../state/requests'
-
-const tagRequests = allRequests.tags
-const projectRequests = allRequests.projects
+import { getTags } from '../../state/actions'
 
 const playerConfig = {
   [KEY_ACTIONS.PLAY]: {
@@ -64,39 +62,26 @@ const playerConfig = {
 }
 
 export const Player = (props: any) => {
-  const { state: { data: projects }, actions: { ACTION } } = quantumReducer({ id: REDUCERS.PROJECTS })
-  const { actions: { ACTION: TAG_ACTION } } = quantumReducer({ id: REDUCERS.TAGS, connect: false })
+  const { state: { data: projects } } = quantumReducer({ id: REDUCERS.PROJECTS })
   const [playerConfiguration] = quantumState({ id: PLAYER_STATES.PLAYER_CONFIGURATION, initialValue: playerConfig })
   const [keyAction, setKeyAction] = quantumState({ id: PLAYER_STATES.KEY_ACTION, initialValue: { count: 0, action: "" } })
   const [projectIds, setProjectIds] = quantumState({ id: PLAYER_STATES.PROJECT_ID, initialValue: new URLSearchParams(window.location.search).get("ids") })
 
   const [showDropCover, setShowDropCover] = useState(false)
 
-
-  useEffect(() => {
+  useMemo(() => {
     setProjectIds(new URLSearchParams(window.location.search).get("ids"))
   }, [])
 
-  // const patchProject = (values) => ACTION({
-  //   ...projectRequests.patch,
-  //   url: projectRequests.patch.url + values._id,
-  //   body: values
-  // }).then(res => console.log(res))
-
   const selectedProjects = useMemo(() => projects.filter(p => projectIds.includes(p._id)), [projects, projectIds])
-  console.log(selectedProjects);
 
   const links = useMemo(() => selectedProjects.length !== 0 ? selectedProjects.reduce((res, p) => {
     return [...res, ...p.links.filter(l => res.every(r => r.url !== l.url))]
   }, []) : [], [selectedProjects])
-  console.log(links);
 
   useEffect(() => {
     if (selectedProjects) {
-      TAG_ACTION({
-        ...tagRequests.get,
-        url: tagRequests.get.url + projectIds
-      })
+      getTags(projectIds)
     }
   }, [selectedProjects])
 

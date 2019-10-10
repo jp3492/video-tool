@@ -1,30 +1,18 @@
 import Auth from '@aws-amplify/auth'
 import { StatusEnum, AuthErrorsEnum } from '../models/enums'
 import { updateStatus, updateError, updateUserName } from '../components/use_authentication'
-import { request } from '../../auth-package'
+import { postUser } from '../../state/actions'
 
 export const signUp = async ({
   username,
-  password,
-  // attributes: {
-  //   email,
-  //   phone_number
-  // }
+  password
 }) => {
   try {
     const user = await Auth.signUp({
       username,
       password
     })
-    await request({
-      api: "CONTENT",
-      url: "/user",
-      method: "POST",
-      body: {
-        email: username,
-        cognitoId: user.userSub
-      }
-    })
+    await postUser(username, user.userSub)
     updateUserName(username)
     updateStatus(StatusEnum.CONFIRMATION_REQUIRED)
   } catch (error) {

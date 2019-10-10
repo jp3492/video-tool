@@ -1,4 +1,4 @@
-import React, { memo, useRef, useState } from 'react'
+import React, { memo, useRef, useState, useEffect } from 'react'
 import './preview-player.scss'
 
 import { quantumState } from '@piloteers/react-state'
@@ -8,6 +8,10 @@ export const PreviewPlayer = memo(() => {
   const [tag, setTag] = quantumState({ id: "PREVIEW", initialValue: {} })
   const [playing, setPlaying] = useState(true)
   const player: any = useRef(null)
+
+  useEffect(() => {
+    setPlaying(true)
+  }, [tag])
 
   if (Object.keys(tag).length === 0) {
     return null
@@ -20,6 +24,7 @@ export const PreviewPlayer = memo(() => {
     end,
     videoName
   } = tag
+
 
   return (
     <div className="preview-player">
