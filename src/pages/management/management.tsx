@@ -26,7 +26,6 @@ const tabs = [
 export const Management = (props: any) => {
   const { state: { data: folders } } = quantumReducer({ id: REDUCERS.FOLDERS })
   const { state: { data: projects } } = quantumReducer({ id: REDUCERS.PROJECTS })
-  console.log(folders);
 
   const [sideBarOpen, openSideBar] = useState(false)
   const [search, setSearch] = useState("")

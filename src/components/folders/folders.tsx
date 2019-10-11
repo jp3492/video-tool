@@ -3,12 +3,6 @@ import './folders.scss'
 
 import { useFolders } from '../../utils'
 
-interface Folder {
-  resourceId: string,
-  label: string,
-  parent: string | null
-}
-
 export const Folders = memo(({
   folders,
   onChange,
@@ -16,7 +10,7 @@ export const Folders = memo(({
   setEditingFolder,
   editingFolder
 }: {
-  folders: Folder[],
+  folders: any[],
   onChange: Function,
   initialSelectedFolder?: string
   setEditingFolder?: Function,
@@ -44,6 +38,7 @@ export const Folders = memo(({
         Object.keys(nestedFolders).map((folder: any, i) => (
           <Folder
             {...nestedFolders[folder]}
+            editDisabled={!setEditingFolder}
             setEditingFolder={setEditingFolder}
             editingFolder={editingFolder}
             key={i}
@@ -66,7 +61,8 @@ const Folder = ({
   openFolder,
   openedFolders,
   setEditingFolder,
-  editingFolder
+  editingFolder,
+  editDisabled
 }) => (
     <div
       className="folders_folder"
@@ -93,6 +89,9 @@ const Folder = ({
       </label>
       <i
         onClick={e => {
+          if (editDisabled) {
+            return
+          }
           if (selectedFolder === _id) {
             e.stopPropagation()
           }
@@ -100,9 +99,10 @@ const Folder = ({
         }}
         className="material-icons">
         {
-          editingFolder === _id ?
-            "edit" :
-            "more_vert"
+          editDisabled ? "" :
+            editingFolder === _id ?
+              "edit" :
+              "more_vert"
         }
       </i>
       {

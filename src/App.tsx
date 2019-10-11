@@ -13,6 +13,7 @@ import { stores } from './state/stores'
 import { PreviewPlayer } from './components/preview-player/preview-player'
 
 import { getUser, getProjects, getFolders, getRequests } from './state/actions'
+import { Requests } from './pages/requests/requests'
 
 initializeStores(stores)
 
@@ -26,6 +27,11 @@ const navItems = [
     label: "Manage Users",
     to: "/users",
     icon: "people"
+  },
+  {
+    label: "Notifications",
+    to: "/requests",
+    icon: "notifications"
   }
 ]
 
@@ -66,11 +72,13 @@ const App: React.FC = () => {
         <Router>
           <Header exact path="/" {...headerProps} components={components} />
           <Header exact path="/users" {...headerProps} components={components} />
+          <Header exact path="/requests" {...headerProps} components={components} />
         </Router>
         <div className="app__content">
           <Router>
             <Management exact path="/" />
             <Users exact path="/users" />
+            <Requests exact path="/requests" />
             <Player exact path="/player" />
           </Router>
           <PreviewPlayer />

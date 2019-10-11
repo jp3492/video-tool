@@ -4,7 +4,7 @@ import { REDUCERS } from '../../state/stores'
 import { requests as allRequests } from '../../state/requests'
 import { getRequestStatus, RequestStatusEnum } from "../../auth-package"
 import { Link } from '@reach/router'
-import { MODAL, MODAL_TYPES } from '../modal/modal'
+import { postSearch } from '../../state/actions'
 
 const requests = allRequests.search
 
@@ -31,31 +31,7 @@ const searchOptions = [
   }
 ]
 
-const targets = (option, search) => {
-  switch (option) {
-    case "user": return getStateById(REDUCERS.USERS).data.filter(({ email }) => email.toLowerCase().includes(search))
-    case "project": return getStateById(REDUCERS.PROJECTS).data.filter(({ label }) => label.toLowerCase().includes(search))
-    case "folder": return getStateById(REDUCERS.FOLDERS).data.filter(({ label }) => label.toLowerCase().includes(search))
-    case "tag": return getStateById(REDUCERS.TAGS).data.filter(({ text }) => text.toLowerCase().includes(search))
-    default:
-      break;
-  }
-}
 
-const getLocalSearchResult = (search: string, options: any) => {
-  const activeOptions: string[] = Object.keys(options).reduce((res: any, o) => options[o] ? [...res, o] : res, [])
-  let result = {}
-  for (let index = 0; index < activeOptions.length; index++) {
-    const optionResult = targets(activeOptions[index], search)
-    if (optionResult.length !== 0) {
-      result = {
-        ...result,
-        [activeOptions[index]]: optionResult
-      }
-    }
-  }
-  return result
-}
 
 export const SearchBar = memo(() => {
   const { state: { data: searchResult }, actions: { ACTION }, dispatch } = quantumReducer({ id: REDUCERS.SEARCH })
@@ -69,58 +45,15 @@ export const SearchBar = memo(() => {
   const [searchOpen, setSearchOpen] = useState(false)
   const [selectedFolder, setSelectedFolder] = quantumState({ id: "SELECTED_FOLDER", returnValue: false })
 
-  // const postProject = body => PROJECT_ACTION({ ...allRequests.projects.post, body }).then(() => openModal({}))
-
-  // const handleSaveAs = useCallback(() => openModal({
-  //   title: "New Project",
-  //   name: MODAL_TYPES.PROJECT_FORM,
-  //   props: {
-  //     folders,
-  //     selectedFolderId: undefined,
-  //     action: postProject,
-  //     initialValues: {
-  //       links: selectedTagLinks
-  //     }
-  //   }
-  // }), [folders, postProject, selectedTagLinks])
-
-  const postSearch = useCallback(async () => {
-    setSearchOpen(true)
-    if (options.global) {
-      ACTION({
-        ...requests.post,
-        body: {
-          search: search.toLowerCase(),
-          options
-        }
-      })
-    } else {
-      TAGS_ACTION(allRequests.tags.get).then(() => {
-        const result = getLocalSearchResult(search.toLowerCase(), options)
-        dispatch({ type: "GET", data: getLocalSearchResult(search.toLowerCase(), options) })
-      })
-    }
-  }, [search, options])
+  const handlePostSearch = useCallback(() => postSearch(options, search), [search, options])
 
   const closeSearch = () => setSearchOpen(false)
 
-  const requestConnection = () => { }
   const requestAccess = () => { }
   const handleOpenFolder = id => {
     setSearchOpen(false)
     setSelectedFolder(id)
   }
-  // const getSearchSuggestion = useCallback(() => {
-
-  // }, [search, options])
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     if (search !== "") {
-  //       console.log("Call suggestion request");
-  //     }
-  //   }, 1000);
-  //   return () => clearTimeout(timer);
-  // }, [search])
 
   return (
     <div className="header-searchbar">
@@ -138,7 +71,6 @@ export const SearchBar = memo(() => {
                 {icon}
               </i>
             ))
-
         }
       </div>
       <input
@@ -148,7 +80,7 @@ export const SearchBar = memo(() => {
         value={search}
         onChange={({ target: { value } }) => setSearch(value)} />
       <div
-        onClick={postSearch}
+        onClick={handlePostSearch}
         className="header-searchbar-submit">
         <i className="material-icons">
           search

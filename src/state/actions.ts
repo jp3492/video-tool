@@ -10,6 +10,7 @@ const FOLDER_ACTION = options => ACTION(options)(action => dispatchToStores({ id
 const PROJECT_ACTION = options => ACTION(options)(action => dispatchToStores({ ids: [REDUCERS.PROJECTS], action }))
 const TAG_ACTION = options => ACTION(options)(action => dispatchToStores({ ids: [REDUCERS.TAGS], action }))
 const REQUEST_ACTION = options => ACTION(options)(action => dispatchToStores({ ids: [REDUCERS.REQUESTS], action }))
+const SEARCH_ACTION = options => ACTION(options)(action => dispatchToStores({ ids: [REDUCERS.SEARCH], action }))
 
 const openModal = modal => setQuantumValue(MODAL, modal)
 const closeModal = () => setQuantumValue(MODAL, {})
@@ -49,9 +50,51 @@ export const patchProject = async ({ _id, ...body }) =>
 export const deleteProject = async _id =>
   await FOLDER_ACTION({ ...requests.projects.delete, url: requests.projects.patch.url + _id })
 
+// SEARCH
+const targets = (option, search) => {
+  switch (option) {
+    case "user": return getStateById(REDUCERS.USERS).data.filter(({ email }) => email.toLowerCase().includes(search))
+    case "project": return getStateById(REDUCERS.PROJECTS).data.filter(({ label }) => label.toLowerCase().includes(search))
+    case "folder": return getStateById(REDUCERS.FOLDERS).data.filter(({ label }) => label.toLowerCase().includes(search))
+    case "tag": return getStateById(REDUCERS.TAGS).data.filter(({ text }) => text.toLowerCase().includes(search))
+    default:
+      break;
+  }
+}
+const getLocalSearchResult = (search: string, options: any) => {
+  const activeOptions: string[] = Object.keys(options).reduce((res: any, o) => options[o] ? [...res, o] : res, [])
+  let result = {}
+  for (let index = 0; index < activeOptions.length; index++) {
+    const optionResult = targets(activeOptions[index], search)
+    if (optionResult.length !== 0) {
+      result = {
+        ...result,
+        [activeOptions[index]]: optionResult
+      }
+    }
+  }
+  return result
+}
+export const postSearch = async (options, search) => {
+  if (options.global) {
+    SEARCH_ACTION({
+      ...requests.search.post,
+      body: {
+        search: search.toLowerCase(),
+        options
+      }
+    })
+  } else {
+    TAG_ACTION(requests.tags.get).then(() => {
+      const data = getLocalSearchResult(search.toLowerCase(), options)
+      dispatchToStores({ ids: [REDUCERS.SEARCH], action: { type: REQUEST_TYPES.GET, data } })
+    })
+  }
+}
+
 // REQUEST
 export const getRequests = async () =>
-  await REQUEST_ACTION(requests.tags.get)
+  await REQUEST_ACTION(requests.requests.get)
 
 // TAG
 export const getTags = async projectIds =>
@@ -129,20 +172,16 @@ export const projectModal = (initialValues?: any) => openModal({
     initialValues
   }
 })
-export const addTagsToProjectsModal = (links, tagIds) => {
-  console.log(links, tagIds);
-
-  openModal({
-    title: "Add Tags to Projects",
-    name: MODAL_TYPES.ATT_TO_PROJECT_FORM,
-    props: {
-      folders: getItems(REDUCERS.FOLDERS),
-      projects: getItems(REDUCERS.PROJECTS),
-      selectedFolderId: undefined,
-      action: projectIds => addTagsToProjects(projectIds, tagIds),
-      initialValues: {
-        links
-      }
+export const addTagsToProjectsModal = (links, tagIds) => openModal({
+  title: "Add Tags to Projects",
+  name: MODAL_TYPES.ATT_TO_PROJECT_FORM,
+  props: {
+    folders: getItems(REDUCERS.FOLDERS),
+    projects: getItems(REDUCERS.PROJECTS),
+    selectedFolderId: undefined,
+    action: projectIds => addTagsToProjects(projectIds, tagIds),
+    initialValues: {
+      links
     }
-  })
-}
+  }
+})
