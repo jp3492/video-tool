@@ -95,6 +95,8 @@ export const postSearch = async (options, search) => {
 // REQUEST
 export const getRequests = async () =>
   await REQUEST_ACTION(requests.requests.get)
+export const postRequest = async body =>
+  await REQUEST_ACTION({ ...requests.requests.post, trackId: requests.requests.post.trackId + `-${body.target}`, body })
 
 // TAG
 export const getTags = async projectIds =>

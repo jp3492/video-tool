@@ -4,7 +4,7 @@ import { REDUCERS } from '../../state/stores'
 import { requests as allRequests } from '../../state/requests'
 import { getRequestStatus, RequestStatusEnum } from "../../auth-package"
 import { Link } from '@reach/router'
-import { postSearch } from '../../state/actions'
+import { postSearch, postRequest } from '../../state/actions'
 
 const requests = allRequests.search
 
@@ -321,21 +321,25 @@ const Users = ({
   users
 }) => {
   const [me] = quantumState({ id: "ME" })
-  const { state: { data: requests }, actions: { ACTION } } = quantumReducer({ id: REDUCERS.REQUESTS })
-  const { statuses, trackStatus } = getRequestStatus({})
+  const { state: { data: requests } } = quantumReducer({ id: REDUCERS.REQUESTS })
+  console.log(me);
 
   const getStatus = useCallback(_id => {
-    const request = requests.find(r => r._id === _id)
-    if (statuses[`requestConnection-${_id}`] === RequestStatusEnum.LOADING) {
-      return 'LOADING'
-    } else if (!request) {
+    const request = requests.find(r => r.from === _id || r.to === _id)
+    console.log(request);
+
+    if (!request) {
       return 'IDLE'
     } else if (request.status === "PENDING" && request.from === me._id) {
       return 'SENT'
     } else if (request.status === "PENDING") {
       return 'RECEIVED'
+    } else if (request.status === "ACCEPTED") {
+      return 'ACCEPTED'
+    } else if (request.status === "REJECTED") {
+      return 'REJECTED'
     }
-  }, [requests, statuses])
+  }, [requests])
 
   return (
     <li>
@@ -347,18 +351,6 @@ const Users = ({
           users.map((user, i) => (
             <User
               key={i}
-              action={() => {
-                trackStatus(`requestConnection-${user._id}`)
-                ACTION({
-                  ...allRequests.requests.post,
-                  trackId: `requestConnection-${user._id}`,
-                  body: {
-                    to: user._id,
-                    target: user._id,
-                    type: "user"
-                  }
-                })
-              }}
               requestStatus={getStatus(user._id)}
               {...user} />
           ))
@@ -368,14 +360,25 @@ const Users = ({
   )
 }
 
-const User = memo(({ action, requestStatus, ...user }: any) => {
-  // const [status, setStatus] = useState("idle")
-  console.log(requestStatus);
+const User = memo(({
+  requestStatus,
+  ...user
+}: any) => {
+  const { isLoading, trackStatus } = getRequestStatus({})
 
-  const requestConnection = () => {
-    // setStatus("loading")
-    action()
-  }
+  const trackId = useMemo(() => `postRequest-${user._id}`, [user._id])
+  const loading = isLoading(trackId)
+
+  useMemo(() => {
+    trackStatus(trackId)
+  }, [user._id])
+
+  const requestConnection = () => postRequest({
+    to: user._id,
+    target: user._id,
+    type: 'user'
+  })
+
   // mögliche statuses:
   // request, loading, pending, failedToSend, accept, reject
   return (
@@ -388,13 +391,17 @@ const User = memo(({ action, requestStatus, ...user }: any) => {
           onClick={requestConnection}
           className="material-icons">
           {
-            requestStatus === "idle" ?
-              "person_add" :
-              requestStatus === "loading" ?
-                "sync" :
-                requestStatus === "success" ?
-                  "done" :
-                  "clear"
+            loading ?
+              "sync" :
+              requestStatus === "IDLE" ?
+                "person_add" :
+                requestStatus === "SENT" ?
+                  "clear" :
+                  requestStatus === "ACCEPTED" ?
+                    "how_to_reg" :
+                    requestStatus === "RECEIVED" ?
+                      "done" :
+                      "report"
           }
         </i>
       </div>
