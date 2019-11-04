@@ -273,7 +273,7 @@ const UserInformation = ({
               <Access />
       }
       <ul className="users__content-information-footer">
-        <li onClick={handleEdit}>
+        <li>
           <label className="button">
             Edit
           </label>
