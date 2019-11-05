@@ -1,0 +1,22 @@
+.profile {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  overflow: hidden;
+  .profile__sidebar {
+    display: grid;
+    grid-auto-rows: max-content;
+    grid-row-gap: 10px;
+    padding: 10px;
+    border-right: 1px solid var(--color-grey-2);
+    overflow: hidden;
+  }
+  .profile__info {
+    display: grid;
+    grid-auto-rows: max-content;
+    max-width: 500px;
+    padding: 20px;
+    > .button {
+      justify-self: end;
+    }
+  }
+}

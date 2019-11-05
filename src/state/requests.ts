@@ -17,7 +17,7 @@ export const requests = {
     patch: {
       api: 'CONTENT',
       method: 'PATCH',
-      url: '/request',
+      url: '/request/',
       trackId: 'patchRequest'
     }
   },
@@ -158,7 +158,7 @@ export const requests = {
     patch: {
       api: 'CONTENT',
       method: 'PATCH',
-      url: '/user/',
+      url: '/user',
       trackId: 'patchUser' // need to overwtrite with id
     },
     post: {

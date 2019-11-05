@@ -49,7 +49,11 @@ export const getUser = async userId => {
 export const getUsers = async () => await USER_ACTION(requests.users.get);
 export const postUser = async (email: string, cognitoId: string) =>
   await USER_ACTION({ ...requests.users.post, body: { email, cognitoId } });
-
+export const patchUser = async information =>
+  await USER_ACTION({
+    ...requests.users.patch,
+    body: information
+  });
 // FOLDER
 export const getFolders = async () => await FOLDER_ACTION(requests.folders.get);
 export const postFolder = async body =>
@@ -151,6 +155,12 @@ export const postRequest = async body =>
     ...requests.requests.post,
     trackId: requests.requests.post.trackId + `-${body.target}`,
     body
+  });
+export const replyToRequest = async (requestId: string, accepted: boolean) =>
+  await REQUEST_ACTION({
+    ...requests.requests.patch,
+    url: requests.requests.patch.url + requestId,
+    body: { accepted }
   });
 
 // TAG

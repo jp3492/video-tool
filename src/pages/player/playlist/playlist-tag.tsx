@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
 import { quantumState } from '@piloteers/react-state';
 import { PLAYER_STATES } from '../states';
@@ -14,6 +14,8 @@ interface Comment {
   author: string;
   text: string;
   _id: string;
+  name: string;
+  updatedAt: string;
 }
 
 export const Tag = ({
@@ -51,6 +53,13 @@ export const Tag = ({
   const [comment, setComment] = useState('');
   const [postingComment, setPostingComment] = useState(false);
 
+  useEffect(() => {
+    if (commentOpen) {
+      // @ts-ignore
+      document.getElementById('comment-input').focus();
+    }
+  }, [commentOpen]);
+
   const handleEditTag = useCallback(() => {
     if (editingTag !== _id) {
       setTagContent({ start, end, text, _id });
@@ -74,7 +83,10 @@ export const Tag = ({
 
   const handleSendComment = useCallback(() => {
     setPostingComment(true);
-    postComment(_id, comment).then(() => setPostingComment(false));
+    postComment(_id, comment).then(() => {
+      setComment('');
+      setPostingComment(false);
+    });
   }, [_id, comment]);
 
   return (
@@ -114,6 +126,7 @@ export const Tag = ({
           className="player-playlist__list__tag-comments"
         >
           <input
+            id="comment-input"
             disabled={postingComment}
             placeholder="Comment..."
             type="text"
@@ -143,12 +156,16 @@ const Comment = ({
   author,
   text,
   tagId,
-  _id
+  _id,
+  name,
+  updatedAt
 }: {
   _id: string;
   author: string;
   text: string;
   tagId: string;
+  name: string;
+  updatedAt: string;
 }) => {
   const [me] = quantumState({ id: 'ME' });
   const [optionsOpen, setOptionsOpen] = useState(false);
@@ -174,8 +191,19 @@ const Comment = ({
     });
   }, [_id, tagId]);
 
+  const time = useMemo(() => {
+    const date = new Date(updatedAt);
+    return `${date.getDate()}.${date.getMonth() +
+      1}.${date.getFullYear()} - ${date.getHours()}:${
+      String(date.getMinutes()).length === 1
+        ? '0' + date.getMinutes()
+        : date.getMinutes()
+    }`;
+  }, [updatedAt]);
+
   return (
     <li>
+      <label>{`${name} - ${time}`}</label>
       {!editing ? (
         <p>{text}</p>
       ) : (
@@ -189,9 +217,9 @@ const Comment = ({
             <i className="material-icons">more_horiz</i>
           ) : (
             <>
-              <i className="material-icons">{editing ? 'clear' : 'clear'}</i>
+              <i className="material-icons">clear</i>
               <i onClick={handlePatchComment} className="material-icons">
-                send
+                done
               </i>
             </>
           )}

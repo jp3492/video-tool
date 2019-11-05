@@ -9,7 +9,11 @@
   background-color: var(--color-grey-1);
   border: 1px solid var(--color-grey-2);
   border-radius: 4px;
-  * { 
+  * {
     cursor: pointer;
+  }
+  &[data-button-disabled='true'] {
+    cursor: not-allowed;
+    pointer-events: none;
   }
 }
