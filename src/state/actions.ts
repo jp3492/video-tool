@@ -46,7 +46,11 @@ export const getUser = async userId => {
   setQuantumValue('ME', user);
   return user;
 };
-export const getUsers = async () => await USER_ACTION(requests.users.get);
+export const getUsers = async ids =>
+  await USER_ACTION({
+    ...requests.users.get,
+    url: requests.users.get.url + JSON.stringify(ids)
+  });
 export const postUser = async (email: string, cognitoId: string) =>
   await USER_ACTION({ ...requests.users.post, body: { email, cognitoId } });
 export const patchUser = async information =>

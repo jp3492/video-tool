@@ -1,20 +1,34 @@
 :root {
+  --cl-bg: #282828;
+
+  --cl-pr-0: #0c0032;
+  --cl-pr-1: #190061;
+  --cl-pr-2: #240090;
+  --cl-pr-3: #3500d3;
+
+  --cl-error: #ff4532;
+
+  --cl-text-l: #bdbdbd;
+  --cl-text-d: #1a1a1d;
+
   --color-grey-1: #f5f5f5;
-  --color-grey-2: #BDBDBD;
+  --color-grey-2: #bdbdbd;
   --color-grey-3: #757575;
   --color-grey-4: #616161;
-  --color-purple: #9C27B0;
-  --color-purple-light: #E1BEE7;
-  --color-purple-dark: #7B1FA2;
-  --color-amber: #FFC107;
-
+  --color-purple: #9c27b0;
+  --color-purple-light: #e1bee7;
+  --color-purple-dark: #7b1fa2;
+  --color-amber: #ffc107;
 
   --shadow: 0px 7px 8px 0px rgba(0, 0, 0, 0.16);
   --shadow-light: 1px 1px 2px 0 rgba(0, 0, 0, 0.1);
   --shadow-medium: 0 2px 4px 0 rgba(0, 0, 0, 0.16);
   --shadow-strong: 0 0 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
-  --shadow-new: 0 .125rem 9.375rem rgba(90,97,105,.1), 0 .25rem .5rem rgba(90,97,105,.12), 0 .9375rem 1.375rem rgba(90,97,105,.1), 0 .4375rem 2.1875rem rgba(165,182,201,.1);
-  --shadow-inset-top: inset 0 5px 5px -7px rgba(0,0,0,0.7);
+  --shadow-new: 0 0.125rem 9.375rem rgba(90, 97, 105, 0.1),
+    0 0.25rem 0.5rem rgba(90, 97, 105, 0.12),
+    0 0.9375rem 1.375rem rgba(90, 97, 105, 0.1),
+    0 0.4375rem 2.1875rem rgba(165, 182, 201, 0.1);
+  --shadow-inset-top: inset 0 5px 5px -7px rgba(0, 0, 0, 0.7);
   --shadow-inset-bottom: inset 0 -70px 60px -70px #000000;
   --shadow-inset-top-strong: inset 0 20px 30px -20px #404040;
 }

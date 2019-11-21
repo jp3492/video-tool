@@ -6,13 +6,12 @@ header {
   height: 60px;
 
   display: grid;
-  grid-template-columns: max-content 1fr max-content;
-  grid-column-gap: 20px;
-  align-items: center;
+  grid-template-columns: 1fr 300px;
+  align-items: stretch;
 
-  border-bottom: 1px solid var(--color-grey-2);
+  border-bottom: 1px solid var(--color-grey-4);
   background-color: white;
-  padding: 0 10px;
+  background-color: var(--cl-bg);
 
   > .header-logo {
     display: grid;
@@ -21,27 +20,25 @@ header {
   }
   > .header-searchbar {
     display: grid;
-    grid-template-columns: 195px 1fr max-content;
-    grid-template-rows: max-content 0px;
+    grid-template-columns: 200px 1fr max-content;
+    grid-template-rows: 1fr 0px;
+    background-color: transparent;
+    align-items: stretch;
     > div:first-of-type {
       display: grid;
       grid-auto-flow: column;
       place-items: center;
       column-gap: 10px;
-      border: 1px solid var(--color-grey-2);
-      border-top-left-radius: 4px;
-      border-bottom-left-radius: 4px;
       padding: 5px 10px;
-      background-color: var(--color-grey-1);
       > i:first-of-type {
         padding-right: 10px;
-        border-right: 2px solid var(--color-grey-2);
+        border-right: 2px solid var(--color-grey-4);
       }
       z-index: 1;
     }
     > input {
-        z-index: 1;
-      border: 1px solid var(--color-grey-2);
+      z-index: 1;
+      border-left: 1px solid var(--color-grey-4);
     }
     > .header-searchbar-submit {
       cursor: pointer;
@@ -52,14 +49,11 @@ header {
       display: grid;
       grid-auto-flow: column;
       column-gap: 10px;
-      border: 1px solid var(--color-grey-2);
-      border-top-right-radius: 4px;
-      border-bottom-right-radius: 4px;
+      border-right: 1px solid var(--color-grey-4);
       padding: 5px 10px;
-      background-color: var(--color-grey-1);
       place-items: center;
     }
-    
+
     > .header-searchbar-result {
       grid-column: 1 / 4;
       position: relative;
@@ -69,14 +63,14 @@ header {
         display: grid;
         position: absolute;
         width: calc(100% - 22px);
-        top: -3px;
         padding: 10px;
-        border: 1px solid var(--color-grey-2);
         border-top: none;
         background-color: var(--color-grey-1);
+        background-color: var(--cl-pr-0);
+        color: var(--cl-text-l);
         gap: 10px;
         > li {
-          border-bottom: 1px solid var(--color-grey-2);
+          border-bottom: 1px solid var(--color-grey-4);
           padding-bottom: 10px;
           &:last-of-type {
             padding-bottom: 0;
@@ -85,8 +79,6 @@ header {
         }
       }
       > .searchbar-result {
-        border-bottom-left-radius: 4px;
-        border-bottom-right-radius: 4px;
         > li {
           gap: 10px;
           h4 {
@@ -113,9 +105,11 @@ header {
             > .searchbar-result__project {
               grid-template-columns: max-content 1fr max-content;
             }
-            > .searchbar-result__project-selection, .searchbar-result__tag-selection {
+            > .searchbar-result__project-selection,
+            .searchbar-result__tag-selection {
               grid-template-columns: 1fr max-content max-content !important;
-              div, a {
+              div,
+              a {
                 display: grid;
                 grid-auto-flow: column;
                 place-items: center;
@@ -156,17 +150,20 @@ header {
   > .header__navigation {
     display: grid;
     grid-template-columns: 1fr max-content;
-    grid-column-gap: 20px;
 
     .header__menu {
       display: grid;
+      padding: 20px;
+      color: var(--cl-text-l);
     }
 
     > ul {
       display: none !important;
     }
 
-    ul, li, li > a {
+    ul,
+    li,
+    li > a {
       display: grid;
       grid-auto-flow: column;
       place-items: center;
@@ -177,17 +174,17 @@ header {
       }
     }
 
-    > nav {
-      justify-self: end;
+    > .header__nav {
+      display: grid;
+      place-items: center;
     }
 
     > .header__drop-component-content {
       display: none;
     }
   }
-  
-  @media (max-width: 1000px) {
 
+  @media (max-width: 1000px) {
     > i {
       display: inherit !important;
       &[data-menu-icon-open="true"] {
@@ -213,7 +210,7 @@ header {
       grid-template-areas:
         "header"
         "nav";
-      
+
       > menu {
         display: none;
       }
@@ -235,7 +232,7 @@ header {
       }
       > .header__drop-component-content {
         grid-area: menu;
-      } 
+      }
       &[data-mobile-nav-selected="false"] {
         grid-template-areas:
           "header"

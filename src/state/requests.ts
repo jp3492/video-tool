@@ -146,7 +146,7 @@ export const requests = {
     get: {
       api: 'CONTENT',
       method: 'GET',
-      url: '/user',
+      url: '/users/',
       trackId: 'getUsers'
     },
     getSingle: {

@@ -1,27 +1,20 @@
 .folders {
   display: grid;
-  grid-row-gap: 10px;
   grid-auto-rows: max-content;
   width: 200px;
-
+  color: var(--cl-text-l);
   .folders_folder {
     display: grid;
     grid-template-columns: max-content 1fr max-content;
     column-gap: 10px;
     align-items: center;
+    padding: 5px 0;
     > i {
       width: 25px;
     }
 
     &[data-folder-selected="true"] {
-      background-color: var(--color-grey-1);
-      > label {
-        background-color: var(--color-grey-1);
-        color: var(--color-amber);
-      }
-      > i {
-        color: var(--color-amber);
-      }
+      background-color: var(--cl-pr-3);
     }
 
     &[data-folder-open="true"] {

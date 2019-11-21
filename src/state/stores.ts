@@ -24,7 +24,7 @@ export const stores = [
     initialState: INITIAL_STATE_LIST,
     actions: { ACTION },
     options: {
-      resourceIdName: "_id"
+      resourceIdName: '_id'
     }
   },
   {
@@ -33,7 +33,7 @@ export const stores = [
     initialState: INITIAL_STATE,
     actions: { ACTION },
     options: {
-      resourceIdName: "_id"
+      resourceIdName: '_id'
     }
   },
   {
@@ -42,7 +42,7 @@ export const stores = [
     initialState: INITIAL_STATE_LIST,
     actions: { ACTION },
     options: {
-      resourceIdName: "_id"
+      resourceIdName: '_id'
     }
   },
   {
@@ -51,7 +51,7 @@ export const stores = [
     initialState: INITIAL_STATE_LIST,
     actions: { ACTION },
     options: {
-      resourceIdName: "_id"
+      resourceIdName: '_id'
     }
   },
   {
@@ -60,7 +60,10 @@ export const stores = [
     initialState: INITIAL_STATE_LIST,
     actions: { ACTION },
     options: {
-      resourceIdName: "_id"
+      resourceIdName: '_id',
+      listener: state => {
+        console.log(state);
+      }
     }
   },
   {
@@ -69,8 +72,8 @@ export const stores = [
     initialState: INITIAL_STATE_LIST,
     actions: { ACTION },
     options: {
-      resourceIdName: "_id",
+      resourceIdName: '_id',
       debug: true
     }
-  },
+  }
 ];

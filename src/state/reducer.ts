@@ -177,6 +177,13 @@ export const REDUCER_LIST = (
     }
   })();
 
+  if (
+    options.hasOwnProperty('listener') &&
+    JSON.stringify(state.data) !== JSON.stringify(newDataState)
+  ) {
+    options.listener(newDataState);
+  }
+
   if (options.debug) {
     console.log('Old State:', state.data);
     console.log('Action:', action);

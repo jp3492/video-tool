@@ -19,21 +19,22 @@
 
   .modal-content {
     display: grid;
-    padding: 20px;
     background-color: white;
     box-shadow: var(--shadow);
     overflow: auto;
     max-width: 90%;
     max-height: 90%;
+    background-color: var(--cl-bg);
     > .modal-content__header {
       display: grid;
-      padding-bottom: 5px;
-      border-bottom: 1px solid var(--color-grey-1);
+      background-color: var(--cl-pr-0);
       > h3 {
         font-size: 18px;
         font-weight: 600;
         justify-self: start;
         text-align: center;
+        padding: 10px;
+        color: var(--cl-text-l);
       }
       > img {
         grid-column: 3 / 4;
